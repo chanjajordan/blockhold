@@ -69,18 +69,29 @@ body.touch #effects{top:calc(72px + env(safe-area-inset-top,0px))}
 .btn.small{min-width:0;padding:6px 12px;font-size:17px}
 .panel{background:var(--panel);border:3px solid var(--edge);box-shadow:inset 0 0 0 2px var(--panel2),0 16px 50px rgba(0,0,0,.6);padding:20px;max-width:calc(100vw - 16px);max-height:calc(100vh - 16px);overflow:auto}
 h2{margin:0 0 14px;font-weight:600;font-size:26px}
-#title{align-items:flex-start;justify-content:center;padding:0 7vw;background:linear-gradient(90deg,rgba(6,10,14,.78) 0%,rgba(6,10,14,.45) 45%,rgba(6,10,14,0) 75%);overflow:auto}
-#logo{font-size:clamp(58px,11vw,132px);font-weight:700;line-height:.95;margin:0;letter-spacing:.02em;color:#6fa83c;
+#title{display:block;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:calc(24px + env(safe-area-inset-top,0px)) 5vw calc(24px + env(safe-area-inset-bottom,0px));background:linear-gradient(90deg,rgba(6,10,14,.82) 0%,rgba(6,10,14,.55) 55%,rgba(6,10,14,.35) 100%);touch-action:pan-y}
+.titleInner{min-height:100%;max-width:1240px;margin:0 auto;display:grid;grid-template-columns:minmax(280px,360px) 1fr;gap:28px 48px;align-items:center}
+@media (max-width:860px){.titleInner{grid-template-columns:1fr;align-items:start}}
+.titleRight h2{font-size:22px;margin:0 0 4px}
+.titleRight .note{margin:0 0 12px}
+#worldGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.worldCard{font:inherit;text-align:left;color:var(--ink);cursor:pointer;display:flex;flex-direction:column;gap:6px;padding:14px;min-height:118px;
+  background:linear-gradient(rgba(20,24,28,.72),rgba(20,24,28,.86)),var(--stone,#333);background-size:auto,48px 48px;image-rendering:pixelated;border:2px solid var(--edge);box-shadow:inset 2px 2px 0 rgba(255,255,255,.12),inset -2px -2px 0 rgba(0,0,0,.45)}
+.worldCard:hover{border-color:var(--amber)}
+.worldCard:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.worldCard b{font-size:19px;font-weight:600}
+.worldCard span{font-size:14px;color:var(--muted);line-height:1.3}
+#logo{font-size:clamp(52px,8vw,112px);font-weight:700;line-height:.95;margin:0;letter-spacing:.02em;color:#6fa83c;
   background:var(--grass,#6fa83c);background-size:clamp(28px,5vw,60px) clamp(28px,5vw,60px);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
   image-rendering:pixelated;filter:drop-shadow(0 5px 0 #2a1a0e)}
-#tag{font-size:21px;color:var(--ink);margin:14px 0 22px;max-width:34ch;text-shadow:2px 2px 0 rgba(0,0,0,.6)}
+#tag{font-size:19px;color:var(--ink);margin:12px 0 18px;max-width:34ch;text-shadow:2px 2px 0 rgba(0,0,0,.6)}
 .menuCol{display:flex;flex-direction:column;gap:10px;align-items:stretch;width:min(340px,86vw)}
 .field{display:flex;flex-direction:column;gap:4px;font-size:16px;color:var(--muted)}
 input[type=text]{font:inherit;font-size:19px;color:var(--ink);background:#0d1114;border:2px solid #4a545b;padding:8px 10px;user-select:text;-webkit-user-select:text}
 .seg{display:flex;border:2px solid var(--edge)}
 .seg button{flex:1;font:inherit;font-size:18px;padding:8px;border:0;background:var(--slot);color:var(--muted);cursor:pointer}
 .seg button[aria-pressed=true]{background:#4b6b2c;color:var(--ink)}
-#keys{margin-top:20px;font-size:15px;color:var(--muted);display:grid;grid-template-columns:auto auto;gap:3px 14px;max-width:460px;text-shadow:1px 1px 0 #000}
+#keys{margin-top:18px;font-size:15px;color:var(--muted);display:grid;grid-template-columns:auto auto;gap:3px 14px;max-width:460px;text-shadow:1px 1px 0 #000}
 #keys b{color:var(--ink);font-weight:600}
 body.touch #keys{display:none}
 #pause .panel,#dead .panel{display:flex;flex-direction:column;gap:10px;align-items:stretch;min-width:300px}
@@ -173,6 +184,8 @@ body.touch #hud{bottom:calc(6px + env(safe-area-inset-bottom,0px))}
 </div>
 
 <div id="title" class="overlay">
+ <div class="titleInner">
+ <div class="titleLeft">
   <h1 id="logo">Blockhold</h1>
   <p id="tag">Dig down, build up, light the portal, and face what waits in the End.</p>
   <div class="menuCol">
@@ -196,6 +209,13 @@ body.touch #hud{bottom:calc(6px + env(safe-area-inset-bottom,0px))}
     <b>1–9, wheel</b><span>Pick hotbar slot</span>
     <b>F3 / Esc</b><span>Debug info / pause</span>
   </div>
+ </div>
+ <div class="titleRight">
+  <h2>Prebuilt worlds</h2>
+  <p class="note">Uses the Survival or Creative choice on the left.</p>
+  <div id="worldGrid"></div>
+ </div>
+ </div>
 </div>
 
 <div id="pause" class="overlay hidden">
@@ -290,7 +310,7 @@ const TILE_NAMES=['grass_top','grass_side','dirt','stone','cobble','log_side','l
  'lava','obsidian','portal','netherrack','soul_sand','glowstone','quartz_ore','end_stone','end_portal','wool',
  'bed_head','bed_foot','bed_side','chest_front','chest_side','chest_top','ench_top','ench_side','redstone_ore','emerald_ore','dust',
  'lever','rs_on','rs_off','lamp_off','lamp_on','rs_block','tnt_side','tnt_top','piston_face','piston_side','piston_back',
- 'door_low','door_up','farmland','wheat0','wheat1','wheat2','wheat3','rail','c_white','c_grey','c_red','c_blue','c_yellow','c_green','c_teal','sapling','rail_c0','rail_c1','rail_c2','rail_c3','prail','prail_on','brew'];
+ 'door_low','door_up','farmland','wheat0','wheat1','wheat2','wheat3','rail','c_white','c_grey','c_red','c_blue','c_yellow','c_green','c_teal','sapling','rail_c0','rail_c1','rail_c2','rail_c3','prail','prail_on','brew','c_purple','c_orange','c_brown'];
 const T={};TILE_NAMES.forEach((n,i)=>T[n]=i);
 const atlasCanvas=document.createElement('canvas');atlasCanvas.width=atlasCanvas.height=256;
 const tileAvg=[];
@@ -396,6 +416,7 @@ const tileAvg=[];
   [[1,0],[1,1],[0,1],[0,0]].forEach(([cxw,czw],k)=>{const t=T['rail_c'+k];for(let py=0;py<16;py++)for(let px=0;px<16;px++){const wx=1-(px+.5)/16,wz=1-(py+.5)/16;const d=Math.hypot(wx-cxw,wz-czw);
     const ang=Math.atan2(wz-czw,wx-cxw);if(Math.abs(d-.22)<.05||Math.abs(d-.78)<.05)P(t,px,py,[170,170,176]);else if(d>.12&&d<.88&&Math.abs(Math.sin(ang*8))<.28)P(t,px,py,V([118,86,52],8))}});
   for(const [n,c] of [['prail',[150,110,40]],['prail_on',[250,200,60]]])for(let y=0;y<16;y++)for(let x=0;x<16;x++){if(y%4===1||y%4===2)P(T[n],x,y,V([118,86,52],8));if(x===3||x===12)P(T[n],x,y,c);if(x===2||x===13)P(T[n],x,y,[110,110,116]);if((x===7||x===8)&&y%4!==3)P(T[n],x,y,n==='prail_on'?[230,40,30]:[90,20,16])}
+  fill(T.c_purple,[130,40,150],5);fill(T.c_orange,[240,150,30],5);fill(T.c_brown,[140,90,50],5);
   for(let y=2;y<14;y++)P(T.brew,7,y,[200,180,60]);for(let x=2;x<14;x++){P(T.brew,x,14,[110,110,110]);P(T.brew,x,15,[90,90,90])}for(const bx of [2,11])for(let y=9;y<13;y++)for(let x=bx;x<bx+3;x++)P(T.brew,x,y,y===9?[220,230,240]:[90,120,220]);
   ctx.putImageData(img,0,0);
   for(let t=0;t<TILE_NAMES.length;t++){let r=0,g=0,b=0,n=0;for(let y=0;y<16;y++)for(let x=0;x<16;x++){const p=G(t,x,y);if(p[3]>0){r+=p[0];g+=p[1];b+=p[2];n++}}tileAvg[t]=n?[r/n,g/n,b/n]:[128,128,128]}
@@ -478,8 +499,11 @@ defB(67,'Teal Concrete',{t:'c_teal',hard:1.8,tool:'pickaxe',tier:1});
 defB(68,'Oak Sapling',{t:'sapling',...NS,cross:true,hard:0,crop:true,support:true});
 defB(69,'Powered Rail',{t:'prail',...NS,shape:true,hard:.7,rs:true,support:true,rail:true});
 defB(70,'Brewing Stand',{t:'stone',icon:'brew',opaque:false,shape:true,hard:.5,tool:'pickaxe',station:'brew',colTop:.125});
+defB(71,'Purple Concrete',{t:'c_purple',hard:1.8,tool:'pickaxe',tier:1});
+defB(72,'Orange Concrete',{t:'c_orange',hard:1.8,tool:'pickaxe',tier:1});
+defB(73,'Brown Concrete',{t:'c_brown',hard:1.8,tool:'pickaxe',tier:1});
 BL[60].rail=true;
-const NB=71;
+const NB=74;
 BL[255]={id:255,name:'Unloaded',solid:true,opaque:false,hard:-1,t:[0,0,0]};
 const SOLID=new Uint8Array(256),OPAQUE=new Uint8Array(256),SPECIAL=new Uint8Array(256),COLTOP=new Float32Array(256);
 for(let i=0;i<NB;i++){const b=BL[i];SOLID[i]=b.solid?1:0;OPAQUE[i]=b.opaque?1:0;SPECIAL[i]=(b.light||b.rs||b.crop)?1:0;COLTOP[i]=b.colTop||1}
@@ -1703,8 +1727,10 @@ function endTravel(){sfx('portal');if(D.id==='end'){switchDim('over');arriveAt(.
 
 // ---------- Prebuilt worlds ----------
 const PRESETS={
+  sg:{name:'Singapore MRT (full network)',desc:'All six lines and 146 stations as of July 2026, with interchanges, line colours, 19 trains and announcements.'},
+  hk:{name:'Harbour City (Hong Kong)',desc:'Neon streets and a harbour skyline. Ride the double-decker tram, the metro under the harbour, the Peak funicular or the ferry.'},
   lantern:{name:'Lantern Island Express',desc:'Cosy harbour island at golden hour. Three talking engines run the main line, the quarry and the harbour.'},
-  mrt:{name:'Heartland MRT',desc:'Singapore-style housing estate with an elevated MRT loop, three stations, a hawker centre and rain trees.'},
+  mrt:{name:'Heartland MRT',desc:'Singapore-style heartland with a 2 km elevated MRT loop, 20 named stations, three trains, HDB estates and hawker centres.'},
   rail:{name:'Clover Valley Railway',desc:'Countryside steam line with two stations, a river bridge, a hill tunnel, fields and cottages.'},
   sky:{name:'Sky Island',desc:'A tiny island over the void and one chest of supplies. Survive and expand.'}
 };
@@ -1723,54 +1749,8 @@ function oakTree(B,x,z,g){const h=5;B.fill(x,g+1,z,x,g+h,z,5);B.add([x-2,g+h-2,z
 function freeRect(res,x0,z0,x1,z1){for(const r of res)if(x0<=r[2]&&x1>=r[0]&&z0<=r[3]&&z1>=r[1])return false;return true}
 function loopPath(pts,y){return pts.map(p=>[p[0]+.5,y,p[1]+.5])}
 function buildLayout(p){const B=new Builder();const L={ops:B.ops,ground:20,trains:[],spawn:[.5,40,.5],chests:[]};
-  if(p==='mrt'){const g=20;L.ground=g;const res=[];
-    // roads
-    B.fill(-220,g,-4,220,g,4,62);B.fill(-4,g,-220,4,g,220,62);B.fill(-220,g,5,220,g,6,21);B.fill(-220,g,-6,220,g,-5,21);B.fill(5,g,-220,6,g,220,21);B.fill(-6,g,-220,-5,g,220,21);
-    for(let t=-220;t<220;t+=6){B.fill(t,g,0,t+2,g,0,61);B.fill(0,g,t,0,g,t+2,61)}B.fill(-6,g,-6,6,g,6,62);
-    res.push([-220,-7,220,7],[-7,-220,7,220]);
-    // viaduct loop
-    const X0=-90,X1=90,Z0=-60,Z1=60,TY=30;const corners=[[X0,Z0],[X1,Z0],[X1,Z1],[X0,Z1]];
-    const stations=[{ax:'x',c:Z0,a:-18,b:18,col:64},{ax:'x',c:Z1,a:-18,b:18,col:67},{ax:'z',c:X1,a:-18,b:18,col:63}];
-    const inStation=(ax,c,t)=>stations.find(s=>s.ax===ax&&s.c===c&&t>=s.a&&t<=s.b);
-    for(let i=0;i<4;i++){const [ax0,az0]=corners[i],[ax1,az1]=corners[(i+1)%4];const alongX=az0===az1;
-      if(alongX){const c=az0;const a=Math.min(ax0,ax1),b=Math.max(ax0,ax1);B.fill(a-2,TY-1,c-2,b+2,TY-1,c+2,62);
-        for(let t=a-2;t<=b+2;t++){if(!inStation('x',c,t)){B.set(t,TY,c-2,61);B.set(t,TY,c+2,61)}}B.fill(a,TY,c,b,TY,c,60,0);
-        for(let t=a;t<=b;t+=10){if(Math.abs(t)<8)continue;B.fill(t-1,g+1,c-1,t,TY-3,c,62);B.fill(t-2,TY-2,c-2,t+1,TY-2,c+2,61)}
-        res.push([a-3,c-3,b+3,c+3])}
-      else{const c=ax0;const a=Math.min(az0,az1),b=Math.max(az0,az1);B.fill(c-2,TY-1,a-2,c+2,TY-1,b+2,62);
-        for(let t=a-2;t<=b+2;t++){if(!inStation('z',c,t)){B.set(c-2,TY,t,61);B.set(c+2,TY,t,61)}}B.fill(c,TY,a,c,TY,b,60,1);
-        for(let t=a;t<=b;t+=10){if(Math.abs(t)<8)continue;B.fill(c-1,g+1,t-1,c,TY-3,t,62);B.fill(c-2,TY-2,t-2,c+2,TY-2,t+1,61)}
-        res.push([c-3,a-3,c+3,b+3])}}
-    corners.forEach(([x,z],i)=>B.set(x,TY,z,60,[3,4,5,2][i]));
-    // stations
-    for(const s of stations){const P=(t,o,y)=>s.ax==='x'?[t,y,s.c+o]:[s.c+o,y,t];
-      const box=(t0,o0,y0,t1,o1,y1,id,m=0)=>{const a=P(t0,o0,y0),b=P(t1,o1,y1);B.fill(a[0],a[1],a[2],b[0],b[1],b[2],id,m)};
-      for(const side of [-1,1]){box(s.a,side*2,TY-1,s.b,side*6,TY,61);
-        for(let t=s.a;t<=s.b;t++){const gap=((t-s.a)%7===3||(t-s.a)%7===4);if(!gap){const q=P(t,side*2,TY+1);B.set(q[0],q[1],q[2],10)}}
-        for(let t=s.a;t<=s.b;t+=6){box(t,side*6,TY+1,t,side*6,TY+5,62)}
-        for(let i=0;i<10;i++){box(-4,side*(7+i),g+1,-2,side*(7+i),TY-i,21)}}
-      box(s.a-1,-7,TY+6,s.b+1,7,TY+6,s.col);box(s.a-1,-7,TY+5,s.b+1,-7,TY+5,61);box(s.a-1,7,TY+5,s.b+1,7,TY+5,61);
-      for(let t=s.a;t<=s.b;t+=6)for(const o of [-4,0,4]){const q=P(t,o,TY+6);B.set(q[0],q[1],q[2],35)}
-      const st=s.ax==='x'?[-6,s.c-18,-1,s.c+18]:[s.c-18,-6,s.c+18,-1];res.push(st)}
-    // HDB blocks
-    const hdb=(x0,z0,len,dep,fl,accent,alongZ)=>{const W_=alongZ?dep:len,Dp=alongZ?len:dep;const x1=x0+W_-1,z1=z0+Dp-1;const top=g+3+fl*3;res.push([x0-2,z0-2,x1+2,z1+2]);
-      B.add([x0,g,z0,x1,top+4,z1],(x,y,z)=>{const ex=x===x0||x===x1,ez=z===z0||z===z1,edge=ex||ez;const lx=alongZ?z-z0:x-x0;const shortSide=alongZ?ez:ex;
-        if(y===g)return[21,0];
-        if(y<=g+3){if(y===g+3)return[61,0];const pil=(ex&&ez)||(edge&&lx%4===0);return pil?[62,0]:[0,0]}
-        if(y>top){if(y===top+1)return edge?[accent,0]:null;const tank=Math.abs(x-(x0+x1)/2)<2.5&&Math.abs(z-(z0+z1)/2)<2&&y<=top+3;return tank?[62,0]:[0,0]}
-        const fy=(y-g-3)%3;if(fy===0)return[edge?(shortSide?accent:61):61,0];
-        if(!edge)return[0,0];if(shortSide)return[accent,0];if(lx%3===0)return[(lx%6===0)?accent:61,0];return[10,0]})};
-    hdb(-72,-42,26,8,12,63);hdb(-72,20,26,8,14,64);hdb(14,-42,26,8,12,65);hdb(-62,74,26,8,16,66);hdb(18,74,26,8,12,67);hdb(108,-32,26,8,14,63,true);hdb(-132,12,26,8,12,64,true);hdb(-42,-102,26,8,13,65);hdb(28,-102,26,8,15,66);
-    // hawker centre
-    const hx=20,hz=16;res.push([hx-2,hz-2,hx+21,hz+15]);B.fill(hx,g,hz,hx+19,g,hz+13,21);
-    B.add([hx,g+1,hz,hx+19,g+8,hz+13],(x,y,z)=>{const lx=x-hx,lz=z-hz;const pil=lx%5===0&&lz%6===0;
-      if(y<=g+4)return pil?[62,0]:(y===g+1&&lx%5===2&&lz%3===1)?[7,0]:[0,0];if(y===g+5)return[63,0];if(y===g+6)return(lx>1&&lx<18&&lz>1&&lz<12)?[63,0]:[0,0];if(y===g+7)return(lx>4&&lx<15&&lz>4&&lz<9)?[63,0]:[0,0];return[0,0]});
-    for(let lx=2;lx<19;lx+=5)B.set(hx+lx,g+4,hz+7,35);
-    // trees
-    const r=mulberry32(4242);let n=0;for(let i=0;i<500&&n<70;i++){const x=Math.round(r()*300-150),z=Math.round(r()*300-150);if(freeRect(res,x-6,z-6,x+6,z+6)){rainTree(B,x,z,g);res.push([x-6,z-6,x+6,z+6]);n++}}
-    L.trains.push({kind:'mrt',path:loopPath(corners,TY+.02),stops:[[.5,Z0+.5],[.5,Z1+.5],[X1+.5,.5]],speed:13});
-    L.spawn=[6.5,TY+1.01,Z0+4.5];
-  }
+  if(p==='mrt')buildMRT(B,L);
+  else if(p==='sg')buildSG(B,L);
   else if(p==='rail'){const g=24;L.ground=g;const res=[];
     // river
     B.fill(-220,g-5,12,220,g-5,19,8);B.fill(-220,g-4,12,220,g-1,19,9);B.fill(-220,g,12,220,g+3,19,0);B.fill(-220,g,11,220,g,11,8);B.fill(-220,g,20,220,g,20,8);res.push([-220,10,220,21]);
@@ -1813,6 +1793,7 @@ function buildLayout(p){const B=new Builder();const L={ops:B.ops,ground:20,train
     L.spawn=[4.5,g+2.01,Z1+4.5];
   }
   else if(p==='lantern')buildLantern(B,L);
+  else if(p==='hk')buildHongKong(B,L);
   else if(p==='sky'){const y=60;B.fill(0,y,0,5,y+2,2,2);B.fill(0,y,3,2,y+2,5,2);B.fill(0,y+2,0,5,y+2,2,1);B.fill(0,y+2,3,2,y+2,5,1);
     oakTree(B,1,4,y+2);B.set(4,y+3,0,41,2);L.chests.push([4,y+3,0,[{id:130,count:1},{id:129,count:1},{id:129,count:1},{id:5,count:12},{id:147,count:4},{id:68,count:3},{id:124,count:4},{id:23,count:4}]]);
     B.fill(40,y-2,-12,42,y,-10,8);B.set(41,y+1,-11,18);B.set(40,y+1,-10,0);
@@ -1827,7 +1808,8 @@ function trainModel(kind,idx,n,def){const g=new THREE.Group();const mats=[];cons
   if(kind==='tank'){const cyl2=(r,len,c,y,z)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,len,16),new THREE.MeshLambertMaterial({color:c}));m.rotation.x=Math.PI/2;m.position.set(0,y,z);g.add(m);mats.push(m.material);return m};
     if(idx===0){const face=tankModel(kind,def.char,g,mats,wheels,box,cyl2);return{group:g,len:5.6,mats,wheels,smoke:new THREE.Vector3(0,3.7,1.9),face}}
     const L=wagonModel(def.consist[idx-1],g,mats,wheels,box);return{group:g,len:L+.5,mats,wheels,smoke:null}}
-  if(kind==='mrt'){const L=6.6;box(2.6,.35,L,0x4a4d52,0,.45,0);box(2.6,2.2,L,0xe6e8ea,0,1.7,0);box(2.64,.22,L+.02,0xc0262d,0,1.05,0);box(2.66,.75,L-.8,0x1c2a38,0,2.05,0);box(2.4,.25,L-.2,0xb8bcc0,0,2.9,0);
+  if(kind==='tram'||kind==='peak'||kind==='ferry'){const r=extraTrainModel(kind,g,mats,wheels,box);return{group:g,len:r.len,mats,wheels,smoke:null}}
+  if(kind==='mrt'){const lv=(def&&def.livery)||{};const L=6.6;box(2.6,.35,L,0x4a4d52,0,.45,0);box(2.6,2.2,L,lv.body||0xe6e8ea,0,1.7,0);box(2.64,.22,L+.02,lv.stripe||0xc0262d,0,1.05,0);box(2.66,.75,L-.8,0x1c2a38,0,2.05,0);box(2.4,.25,L-.2,0xb8bcc0,0,2.9,0);
     for(const s of [-1.5,1.5])box(.02,1.8,1.1,0x9aa0a6,1.33,1.5,s);for(const s of [-1.5,1.5])box(.02,1.8,1.1,0x9aa0a6,-1.33,1.5,s);
     if(idx===0){box(2.3,1.1,.1,0x10161c,0,2.0,L/2+.02);box(.4,.2,.05,0xfff4c0,-.8,1.2,L/2+.03,true);box(.4,.2,.05,0xfff4c0,.8,1.2,L/2+.03,true)}
     if(idx===n-1){box(2.3,1.1,.1,0x10161c,0,2.0,-L/2-.02);box(.4,.2,.05,0xff3030,-.8,1.2,-L/2-.03,true);box(.4,.2,.05,0xff3030,.8,1.2,-L/2-.03,true)}
@@ -1850,23 +1832,27 @@ function trainModel(kind,idx,n,def){const g=new THREE.Group();const mats=[];cons
     for(const s of [-1,1])for(const z of [-2.2,2.2])wheel(s*.95,z,.45);return{group:g,len:L+.4,mats,wheels,smoke:null}}}
 function makeTrains(){clearTrains();if(!W.layout)return;
   for(const t of W.layout.trains){const pts=t.path.map(p=>new THREE.Vector3(p[0],p[1],p[2]));const seg=[];let total=0;for(let i=0;i<pts.length;i++){const l=pts[i].distanceTo(pts[(i+1)%pts.length]);seg.push(l);total+=l}
-    const n=t.consist?t.consist.length+1:4;const cars=[];let off=0;for(let i=0;i<n;i++){const m=trainModel(t.kind,i,n,t);scene.add(m.group);m.off=off+m.len/2;off+=m.len;cars.push(m)}
+    const n=t.n||(t.consist?t.consist.length+1:4);const cars=[];let off=0;for(let i=0;i<n;i++){const m=trainModel(t.kind,i,n,t);scene.add(m.group);m.off=off+m.len/2;off+=m.len;cars.push(m)}
     const tr={def:t,pts,seg,total,cars,length:off,s:0,v:0,state:'run',stopT:0,stops:[],wheelA:0,smokeT:0};
-    tr.stops=t.stops.map(([x,z])=>{const s=projectS(tr,x,z);return(s+off/2)%total}).sort((a,b)=>a-b);
-    tr.s=(tr.stops[0]+total-.01)%total;tr.state='stop';tr.stopT=4+trains.length*2;tr.face=cars[0].face||null;tr.host={model:{group:cars[0].group},bubble:null,bubbleT:0};bubbleHosts.push(tr.host);tr.chatT=5;trains.push(tr)}}
-function clearTrains(){for(const t of trains)for(const c of t.cars){scene.remove(c.group);c.group.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material)o.material.dispose()})}trains.length=0;bubbleHosts.length=0;if(player.riding)player.riding=null}
+    if(t.stopS){const pairs=t.stopS.map((s,i)=>[((s+off/2)%total+total)%total,t.stopNames[i]]).sort((a,b)=>a[0]-b[0]);tr.stops=pairs.map(p=>p[0]);tr.stopNames=pairs.map(p=>p[1]);
+      tr.flip=new Set((t.flipS||[]).map(s=>Math.round((((s+off/2)%total)+total)%total*100)))}
+    else if(t.stopF)tr.stops=t.stopF.map(f=>f*total);else{const pairs=t.stops.map(([x,z,nm])=>[(projectS(tr,x,z)+off/2)%total,nm]).sort((a,b)=>a[0]-b[0]);tr.stops=pairs.map(p=>p[0]);if(pairs.some(p=>p[1]))tr.stopNames=pairs.map(p=>p[1])}
+    tr.atIdx=t.startStop||0;tr.s=(tr.stops[tr.atIdx]+total-.01)%total;tr.state='stop';tr.stopT=4+trains.length*2;tr.face=cars[0].face||null;tr.host={model:{group:cars[0].group},bubble:null,bubbleT:0};bubbleHosts.push(tr.host);tr.chatT=5;trains.push(tr)}}
+function clearTrains(){for(const t of trains)for(const c of t.cars){scene.remove(c.group);c.group.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material)o.material.dispose()})}trains.length=0;bubbleHosts.length=0;clearStationLabels();if(player.riding)player.riding=null}
 function projectS(tr,x,z){let best=0,bd=1e9,acc=0;for(let i=0;i<tr.pts.length;i++){const a=tr.pts[i],b=tr.pts[(i+1)%tr.pts.length];const dx=b.x-a.x,dz=b.z-a.z,L2=dx*dx+dz*dz;let u=((x-a.x)*dx+(z-a.z)*dz)/L2;u=clamp(u,0,1);const px=a.x+dx*u,pz=a.z+dz*u;const d=Math.hypot(px-x,pz-z);if(d<bd){bd=d;best=acc+u*tr.seg[i]}acc+=tr.seg[i]}return best}
 function pointAt(tr,s,out){s=((s%tr.total)+tr.total)%tr.total;let i=0;while(s>tr.seg[i]){s-=tr.seg[i];i++}const a=tr.pts[i],b=tr.pts[(i+1)%tr.pts.length];return out.copy(a).lerp(b,s/tr.seg[i])}
 const _pa=new THREE.Vector3(),_pb=new THREE.Vector3();
-function placeCar(tr,c){const sc=tr.s-c.off;pointAt(tr,sc+c.len*.38,_pa);pointAt(tr,sc-c.len*.38,_pb);c.group.position.copy(_pa).add(_pb).multiplyScalar(.5);c.yaw=Math.atan2(_pa.x-_pb.x,_pa.z-_pb.z);c.group.rotation.y=c.yaw}
-function updateTrains(dt,dl){const vis=D.id==='over';
+function placeCar(tr,c){const sc=tr.s-c.off;pointAt(tr,sc+c.len*.38,_pa);pointAt(tr,sc-c.len*.38,_pb);c.group.position.copy(_pa).add(_pb).multiplyScalar(.5);
+  if(tr.def.fixedYaw!==undefined){c.yaw=tr.def.fixedYaw;const hi=_pa.z>_pb.z?_pa:_pb,lo=hi===_pa?_pb:_pa;const pitch=Math.atan2(hi.y-lo.y,Math.hypot(hi.x-lo.x,hi.z-lo.z)||1);c.group.rotation.set(-pitch,c.yaw,0);return}
+  c.yaw=Math.atan2(_pa.x-_pb.x,_pa.z-_pb.z);c.group.rotation.y=c.yaw}
+function updateTrains(dt,dl){const vis=D.id==='over';updateLabels(dt,vis);
   for(const tr of trains){for(const c of tr.cars)c.group.visible=vis;
-    if(tr.state==='stop'){tr.v=0;tr.stopT-=dt;if(tr.stopT<=0){tr.state='run';if(vis&&tr.cars[0].group.position.distanceTo(player.pos)<60)sfx('horn');if(vis)engineLine(tr,'leave')}}
+    if(tr.state==='stop'){tr.v=0;tr.stopT-=dt;if(tr.stopT<=0){tr.state='run';if(tr.flip&&tr.flip.has(Math.round(tr.s*100))){tr.s=((tr.total-tr.s+tr.length)%tr.total+tr.total)%tr.total;for(const c of tr.cars)placeCar(tr,c)}const hkK=['tram','peak','ferry'].includes(tr.def.kind)||W.preset==='hk';if(vis&&!hkK&&tr.cars[0].group.position.distanceTo(player.pos)<60)sfx('horn');if(vis&&hkK)hkSound(tr,'leave');announce(tr,'leave',tr.atIdx);if(vis)engineLine(tr,'leave')}}
     else{let next=null,dn=1e9;for(const s of tr.stops){const d=((s-tr.s)%tr.total+tr.total)%tr.total;if(d>.05&&d<dn){dn=d;next=s}}
       const vmax=tr.def.speed;const brake=Math.sqrt(2*2.2*Math.max(0,dn-.02));tr.v=Math.min(vmax,brake,tr.v+2.5*dt);
-      if(dn<.08||tr.v<.05&&dn<.5){tr.s=next;tr.state='stop';tr.stopT=tr.def.char?9:7;if(vis)engineLine(tr,'arrive')}else tr.s=(tr.s+tr.v*dt)%tr.total}
-    tr.wheelA+=tr.v*dt/.5;
-    for(const c of tr.cars){placeCar(tr,c);for(const w of c.wheels)w.rotation.x=tr.wheelA}
+      if(dn<.08||tr.v<.05&&dn<.5){tr.s=next;tr.state='stop';tr.atIdx=tr.stops.indexOf(next);announce(tr,'arrive',tr.atIdx);tr.stopT=tr.def.char?9:tr.def.kind==='ferry'?10:7;if(vis){engineLine(tr,'arrive');hkSound(tr,'arrive')}}else tr.s=(tr.s+tr.v*dt)%tr.total}
+    tr.wheelA+=tr.v*dt/.5;const far=tr.cars[0].group.position.distanceTo(player.pos)>340&&!(player.riding&&player.riding.train===tr);
+    for(const c of tr.cars){placeCar(tr,c);c.group.visible=vis&&!far;if(!far)for(const w of c.wheels)w.rotation.x=tr.wheelA}
     if(vis&&tr.face){animateFace(tr,dt);tr.chatT-=dt;if(tr.chatT<=0){tr.chatT=12+Math.random()*10;if(tr.cars[0].group.position.distanceTo(player.pos)<8&&!tr.host.bubble)engineLine(tr,'near')}}
     const loco=tr.cars[0];if(vis&&loco.smoke){tr.smokeT-=dt;if(tr.smokeT<=0){tr.smokeT=tr.v>1?.12:.5;const p=loco.smoke.clone().applyAxisAngle(new THREE.Vector3(0,1,0),loco.yaw).add(loco.group.position);burst(p.x,p.y,p.z,[200,200,200],2,1.2)}}
     if(vis&&!player.riding)for(const c of tr.cars){const lp=player.pos.clone().sub(c.group.position).applyAxisAngle(new THREE.Vector3(0,1,0),-c.yaw);
@@ -1998,6 +1984,264 @@ function animateFace(tr,dt){const f=tr.face;if(!f)return;const E=ENGINES[f.char]
   if(E.kind==='sleepy'&&tr.state==='stop')open=.15+Math.abs(Math.sin(gameT*.6))*.2;
   f.lids.forEach((l,i)=>{l.position.y=2.15+.34*open+(E.kind==='nervous'?.1:0);l.rotation.z=E.kind==='bossy'?(i?.28:-.28):E.kind==='nervous'?(i?-.2:.2):0});
   const talking=tr.host.bubble;f.mouth.scale.set(E.kind==='nervous'?.6:1,talking?1+Math.abs(Math.sin(gameT*14))*.8:1,1);f.mouth.rotation.z=E.kind==='bossy'?.12:E.kind==='sleepy'?-.05:Math.sin(gameT*10)*.06}
+
+// ---------- Harbour City (Hong Kong inspired) ----------
+function buildHongKong(B,L){const g=32;L.ground=g;const res=[];const TY=g+1;
+  const peakH=(x,z)=>{const d=Math.hypot(x/1.4,z-150);return Math.max(g,Math.round(g+60*Math.max(0,1-Math.pow(d/75,1.5))))};
+  const lionH=(x,z)=>{const d=Math.hypot(x-20,(z+175)*1.2);return Math.max(g,Math.round(g+52*Math.max(0,1-Math.pow(d/62,1.4))))};
+  L.column=(x,z)=>{if(z>-30&&z<30)return[20,8];if(Math.abs(z)<=34)return[g,21];
+    if(z>34){const h=z>76?peakH(x,z):g;return[h,h>g?1:62]}const h=lionH(x,z);return[h,h>g+34?3:h>g?1:62]};
+  const colAt=(x,z)=>L.column(x,z)[0];
+  // ---- promenades & piers
+  for(const s of [-1,1]){for(let x=-120;x<=120;x+=10){const z=s*32;B.fill(x,TY,z,x,TY+3,z,62);B.set(x,TY+4,z,35)}
+    for(let x=-115;x<=115;x+=10){const z=s*33;B.set(x,TY,z,7)}}
+  for(const [z0,z1] of [[-30,-22],[22,30]]){B.fill(26,g,z0,34,g,z1,7);for(const x of [26,34])for(const z of [z0,z1])B.fill(x,20,z,x,g-1,z,5)}
+  const shelter=(zc)=>B.add([25,TY,zc-2,35,TY+4,zc+2],(x,y,z)=>{const post=(x===25||x===35)&&(z===zc-2||z===zc+2);if(y===TY+4)return[66,0];if(y===TY+3)return(x>25&&x<35&&z>zc-2&&z<zc+2)?[66,0]:(post?[5,0]:null);return post?[5,0]:null});
+  shelter(-32);shelter(32);res.push([22,-36,38,-20],[22,20,38,36]);
+  // junk boat
+  B.add([-50,22,-4,-30,g+12,4],(x,y,z)=>{const dx=(x+40)/10,dz=z/3.5;const r=dx*dx+dz*dz;
+    if(y===29&&r<.7)return[7,0];if(y===30&&r<1&&r>=.5)return[7,0];if(y===31&&r<1&&r>=.55&&Math.abs(dx)>.7)return[7,0];if(y===30&&r<.5)return[0,0];
+    const mast=[-46,-40,-34].find(m=>m===x);if(mast!==undefined&&z===0&&y>30&&y<g+11)return[5,0];
+    if([-45,-39,-33].includes(x)&&z===0&&y>31&&y<g+10-(x===-33?2:0))return[63,0];if([-44,-38].includes(x)&&z===0&&y>32&&y<g+8)return[63,0];return null});
+  // ---- metro under the harbour
+  const MY=16;const mc=[[-70,-60],[70,-60],[70,60],[-70,60]];
+  for(let i=0;i<4;i++){const [ax0,az0]=mc[i],[ax1,az1]=mc[(i+1)%4];const alongX=az0===az1;const c=alongX?az0:ax0;const a=Math.min(alongX?ax0:az0,alongX?ax1:az1),b=Math.max(alongX?ax0:az0,alongX?ax1:az1);
+    B.add(alongX?[a-2,MY-1,c-2,b+2,MY+5,c+2]:[c-2,MY-1,a-2,c+2,MY+5,b+2],(x,y,z)=>{const o=alongX?Math.abs(z-c):Math.abs(x-c);
+      if(o===2||y===MY+5)return[21,0];if(y===MY-1)return[22,0];if(y===MY+4&&o===0&&(alongX?x:z)%8===0)return[35,0];return[0,0]})}
+  for(let i=0;i<4;i++){const [ax0,az0]=mc[i],[ax1,az1]=mc[(i+1)%4];if(az0===az1)B.fill(Math.min(ax0,ax1),MY,az0,Math.max(ax0,ax1),MY,az0,60,0);else B.fill(ax0,MY,Math.min(az0,az1),ax0,MY,Math.max(az0,az1),60,1)}
+  mc.forEach(([x,z],i)=>B.set(x,MY,z,60,[3,4,5,2][i]));
+  const metroStation=(zc,tile)=>{B.add([-22,MY-1,zc-7,22,MY+6,zc+7],(x,y,z)=>{const dz=z-zc;const wall=Math.abs(x)===22||Math.abs(dz)===7;
+      if(y===MY+6)return(x%5===0&&Math.abs(dz)===3)?[35,0]:[61,0];if(y===MY-1)return[21,0];if(wall)return[(y===MY+2)?63:tile,0];
+      if(Math.abs(dz)>=2&&Math.abs(dz)<=6&&y===MY)return[61,0];if(dz===0&&y===MY)return[60,0];if(Math.abs(dz)===2&&y===MY+1&&(x%6===0))return[62,0];return[0,0]});
+    const s=zc>0?1:-1;B.add([21,MY,Math.min(zc+s*2-1,zc+s*5),38,TY+4,Math.max(zc+s*2-1,zc+s*5)],(x,y,z)=>{const i=x-21;const top=MY+i;const za=Math.min(zc+s*2-1,zc+s*5),zb=Math.max(zc+s*2-1,zc+s*5);const edge=z===za||z===zb;
+      if(y<=Math.min(top,g))return edge&&y>MY?[21,0]:[21,0];if(y<=top+4){if(edge)return y<=g?[21,0]:[0,0];return[0,0]}if(y===top+5&&y<=g)return[21,0];return null});
+    res.push([19,Math.min(zc+s*2,zc+s*6)-2,41,Math.max(zc+s*2,zc+s*6)+2])};
+  metroStation(60,64);metroStation(-60,65);
+  // ---- tram loop on the island
+  const tc=[[-90,38],[90,38],[90,52],[-90,52]];
+  for(let i=0;i<4;i++){const [ax0,az0]=tc[i],[ax1,az1]=tc[(i+1)%4];if(az0===az1){const a=Math.min(ax0,ax1),b=Math.max(ax0,ax1);B.fill(a-2,g,az0-2,b+2,g,az0+2,62);B.fill(a-2,TY,az0-2,b+2,TY+5,az0+2,0);B.fill(a,TY,az0,b,TY,az0,60,0);res.push([a-3,az0-3,b+3,az0+3])}
+    else{const a=Math.min(az0,az1),b=Math.max(az0,az1);B.fill(ax0-2,g,a-2,ax0+2,g,b+2,62);B.fill(ax0-2,TY,a-2,ax0+2,TY+5,b+2,0);B.fill(ax0,TY,a,ax0,TY,b,60,1);res.push([ax0-3,a-3,ax0+3,b+3])}}
+  tc.forEach(([x,z],i)=>B.set(x,TY,z,60,[3,4,5,2][i]));
+  const tramStop=(x0,z,side)=>{B.fill(x0-4,g,z+side*3,x0+4,g,z+side*3,21);B.add([x0-4,TY,z+side*4,x0+4,TY+3,z+side*4],(x,y)=>y===TY+3?[66,0]:(Math.abs(x-x0)===4?[5,0]:(y===TY&&Math.abs(x-x0)<3?[7,0]:null)))};
+  tramStop(-40,38,-1);tramStop(40,38,-1);tramStop(0,52,1);
+  B.add([-86,g,41,86,g+1,49],(x,y,z)=>{if(y===g)return[(x+z)%7===0?21:1,0];return(hash3(x,7,z)<.05)?[hash3(x,8,z)<.5?25:26,0]:null});
+  for(let x=-80;x<=80;x+=16)oakTree(B,x,45,g);res.push([-88,39,88,51]);
+  // ---- Peak funicular
+  const P0=82,RISE=56;
+  B.add([-3,g-2,P0,5,g+RISE+6,P0+RISE],(x,y,z)=>{const k=z-P0;const ry=TY+k;if(y<ry){if(Math.abs(x)<=1||(x>=2&&x<=4&&(k<9||k>RISE-9)))return[21,0];return null}
+    if(y===ry&&x===0)return[60,8];if(y<=ry+5&&x>=-2&&x<=4){if(x>=2&&x<=4&&(k<9||k>RISE-9)&&y===ry)return[21,0];return[0,0]}return null});
+  B.add([-5,g,76,5,g+5,81],(x,y,z)=>{const e=Math.abs(x)===5||z===76;if(y===g)return[21,0];if(y===g+5)return[63,0];if(e&&y<g+5)return(z===76&&Math.abs(x)<2&&y<g+3)?[0,0]:(y===g+3&&Math.abs(x)%3===1?[10,0]:[61,0]);return[0,0]});
+  const PY=TY+RISE;B.add([-14,PY-1,P0+RISE+1,14,PY+8,P0+RISE+12],(x,y,z)=>{const e=Math.abs(x)===14||z===P0+RISE+12;if(y===PY-1)return[21,0];if(y===PY&&e)return[10,0];
+    if(y===PY&&z===P0+RISE+4&&Math.abs(x)>4&&Math.abs(x)<12)return[7,0];if(y===PY&&(x===-10||x===10)&&z===P0+RISE+10)return[27,0];if(y===PY+1&&(x===-10||x===10)&&z===P0+RISE+10)return[10,0];return[0,0]});
+  res.push([-7,74,7,P0+RISE+13]);
+  // ---- island towers
+  const rnd=mulberry32(852);
+  const tower=(x0,z0,w,d,h,mull,crown)=>{res.push([x0-1,z0-1,x0+w,z0+d]);B.add([x0,g,z0,x0+w-1,g+h+3,z0+d-1],(x,y,z)=>{const lx=x-x0,lz=z-z0,e=lx===0||lz===0||lx===w-1||lz===d-1;const f=y-g;
+    const setback=f>h*.7?2:0;const inside=lx>=setback&&lx<w-setback&&lz>=setback&&lz<d-setback;if(!inside)return f>h*.7?[0,0]:null;
+    const ee=lx===setback||lz===setback||lx===w-1-setback||lz===d-1-setback;
+    if(f>h){if(f===h+1&&ee)return[crown,0];if(f===h+2&&ee&&(lx+lz)%3===0)return[35,0];return f===h+1?[62,0]:null}
+    if(f===0)return ee?[21,0]:[21,0];if(!ee)return f%4===0?[62,0]:[0,0];const corner=(lx===setback||lx===w-1-setback)&&(lz===setback||lz===d-1-setback);
+    if(corner)return[mull,0];if(f%4===0)return[mull,0];if(f<4&&(lx===Math.floor(w/2)||lz===Math.floor(d/2)))return[0,0];return[10,0]})};
+  const crowns=[35,63,64,67,65];
+  for(let x=-104;x<=92;x+=17){if(x>-12&&x<10)continue;if(x>14&&x<42)continue;const w=11+(rnd()*3|0),d=12+(rnd()*3|0);tower(x,58,w,d,34+(rnd()*30|0),[62,61,64,67][rnd()*4|0],crowns[rnd()*5|0])}
+  // ---- Kowloon streets
+  for(let z=-40;z>=-150;z-=20)for(let x=-120;x<=120;x+=4)B.set(x,g,z,x%8===0?61:62);
+  for(let x=-110;x<=110;x+=22)for(let z=-38;z>=-150;z-=4)B.set(x,g,z,z%8===0?61:62);
+  const signCols=[63,65,67,64,66];
+  const shop=(x0,z0,w,d,h,col,face)=>{B.add([x0,g,z0,x0+w-1,g+h+1,z0+d-1],(x,y,z)=>{const lx=x-x0,lz=z-z0,e=lx===0||lz===0||lx===w-1||lz===d-1;const f=y-g;
+      if(f===0)return[21,0];if(f>h)return e?[col,0]:null;if(!e)return f%3===0?[62,0]:[0,0];
+      if(f%3===0)return[col,0];const onFace=face>0?lz===d-1:lz===0;if(f<3&&onFace&&lx>0&&lx<w-1)return lx===Math.floor(w/2)?[0,0]:[10,0];return((lx+lz)%2===0&&!(lx===0||lx===w-1)&&!(lz===0||lz===d-1)&&false)?null:((lx%2===1||lz%2===1)&&!((lx===0||lx===w-1)&&(lz===0||lz===d-1)))?[10,0]:[col,0]});
+    const sz=face>0?z0+d:z0-1;const sx=x0+Math.floor(w/2);const sc=signCols[(x0*7+z0)&3];const sh=5+(Math.abs(x0*3+z0)%5);
+    B.add([sx,g+sh,sz,sx,g+sh+5,sz],(x,y)=>[(y-g-sh)%2===0?35:sc,0])};
+  const kr=mulberry32(4411);const cols=[61,62,65,67,66,64];
+  for(let xa=-110;xa<110;xa+=22)for(let za=-40;za>-150;za-=20){const x0=xa+2,x1=xa+20,z0=za-18,z1=za-2;if(!freeRect(res,x0,z0,x1,z1))continue;let ok=true;for(const [cx,cz] of [[x0,z0],[x1,z1],[x0,z1],[x1,z0]])if(colAt(cx,cz)!==g)ok=false;if(!ok)continue;
+    for(let i=0;i<3;i++){const w=6;const bx=x0+i*6;shop(bx,z1-7,w,8,12+(kr()*18|0),cols[kr()*cols.length|0],1);shop(bx,z0,w,8,12+(kr()*18|0),cols[kr()*cols.length|0],-1)}}
+  // clock tower on the Kowloon waterfront
+  B.add([44,g,-44,48,g+42,-40],(x,y,z)=>{const lx=x-44,lz=z+44,e=lx===0||lx===4||lz===0||lz===4;const f=y-g;
+    if(f<30){if(!e)return[0,0];if(f%6===5)return[21,0];if((lx===2||lz===2)&&f%6===3)return[10,0];return[63,0]}
+    if(f<34){if(e&&(lx===2||lz===2)&&f===31)return[61,0];if(e&&(lx===2||lz===2)&&f===32)return[62,0];return e?[21,0]:[0,0]}
+    const k=f-34;if(lx>=Math.min(2,k/2|0)&&lx<=4-Math.min(2,k/2|0)&&lz>=Math.min(2,k/2|0)&&lz<=4-Math.min(2,k/2|0))return k>=6?(lx===2&&lz===2?[27,0]:null):[21,0];return null});
+  res.push([42,-46,50,-38]);
+  // trees on the hills
+  const tr2=mulberry32(77);let n=0;for(let i=0;i<900&&n<90;i++){const x=Math.round(tr2()*240-120),z=Math.round(tr2()*260-205+(tr2()<.55?300:0));const [h,top]=L.column(x,z);if(top===1&&h>g+2&&h<g+50&&freeRect(res,x-2,z-2,x+2,z+2)){oakTree(B,x,z,h);n++}}
+  // trains
+  const lp=(c,y)=>loopPath(c,y);
+  L.trains.push({kind:'mrt',livery:{body:0xc9cdd2,stripe:0xc8102e},path:lp(mc,MY+.02),stops:[[.5,60.5],[.5,-59.5]],speed:14});
+  L.trains.push({kind:'tram',n:1,path:lp(tc,TY+.02),stops:[[-39.5,38.5],[40.5,38.5],[.5,52.5]],speed:7});
+  L.trains.push({kind:'peak',n:1,fixedYaw:0,path:[[.5,TY+.06,P0],[.5,TY+RISE+.06,P0+RISE]],stopF:[0,.5],speed:5});
+  L.trains.push({kind:'ferry',n:1,fixedYaw:0,path:[[30.5,30.25,-21],[30.5,30.25,21]],stopF:[0,.5],speed:4});
+  L.spawn=[30.5,TY+.01,-36.5];L.spawnYaw=Math.PI;L.time=.45}
+function extraTrainModel(kind,g,mats,wheels,box){
+  const wheel=(x,z,r,c=0x222222)=>{const w=new THREE.Mesh(new THREE.CylinderGeometry(r,r,.16,12),new THREE.MeshLambertMaterial({color:c}));w.rotation.z=Math.PI/2;w.position.set(x,r,z);g.add(w);wheels.push(w)};
+  if(kind==='tram'){const L=7.2;box(2.0,.35,L-1,0x1a1a1a,0,.75,0);box(2.3,1.9,L,0x2e7a3e,0,1.9,0);box(2.3,1.7,L,0x2e7a3e,0,3.75,0);box(2.34,.18,L+.02,0xefe6c8,0,2.9,0);
+    box(2.34,.75,L-.8,0x1a2a30,0,2.25,0);box(2.34,.8,L-.6,0x1a2a30,0,3.85,0);box(2.1,.18,L-.2,0xdad2b8,0,4.66,0);
+    box(.08,.08,2.8,0x222222,0,5.4,-1.2).rotation.x=-.45;for(const s of [-1,1]){box(1.4,.35,.05,0x101010,0,4.35,s*(L/2+.02));box(1.2,.22,.03,0xffb020,0,4.35,s*(L/2+.05),true);box(.3,.2,.05,0xfff4c0,s*0,1.2,s*(L/2+.03),true)}
+    for(const s of [-1,1])for(const z of [-2.4,2.4])wheel(s*.8,z,.38);return{len:L+.6}}
+  if(kind==='peak'){const L=6.2;box(2.2,.4,L,0x2a1a14,0,.4,0);box(2.4,2.0,L,0x7a1a24,0,1.6,0);box(2.44,.8,L-.6,0xf2e6c8,0,1.95,0);for(let z=-2.4;z<=2.4;z+=1.2)for(const s of [-1,1])box(.03,.55,.8,0x1a2230,s*1.23,1.95,z);
+    box(2.6,.2,L+.2,0x3a1a14,0,2.7,0);for(const s of [-1,1])box(1.8,.6,.05,0x1a2230,0,1.95,s*(L/2+.02));for(const s of [-1,1])for(const z of [-2,2])wheel(s*.9,z,.35);return{len:L+.3}}
+  if(kind==='ferry'){const L=10;box(4.2,1.1,L,0x2f6b3a,0,-.1,0);box(4.3,.2,L+.1,0xf2f2f2,0,.55,0);box(3.9,1.4,L-1.4,0xf2f2f2,0,1.3,0);box(3.94,.6,L-2,0x1a2a30,0,1.4,0);
+    box(3.6,1.1,L-3,0xf2f2f2,0,2.55,0);box(3.64,.5,L-3.6,0x1a2a30,0,2.6,0);box(3.9,.18,L-1,0x2f6b3a,0,3.2,0);box(.5,1,.5,0x2f6b3a,0,3.7,0);
+    for(const s of [-1,1])box(3.2,.2,.8,0x9a7a50,0,.75,s*(L/2-.6));return{len:L+.4}}}
+function hkSound(tr,kind){if(!actx||tr.cars[0].group.position.distanceTo(player.pos)>50||D.id!=='over')return;
+  if(tr.def.kind==='tram'&&kind==='leave'){tone('sine',1320,1300,.35,.1);setTimeout(()=>actx&&tone('sine',1320,1300,.35,.1),220)}
+  else if(tr.def.kind==='ferry'&&kind==='leave')tone('sawtooth',110,105,1.2,.08);
+  else if(tr.def.kind==='mrt'&&kind==='arrive'&&W.preset==='hk'){tone('sine',880,880,.25,.07);setTimeout(()=>actx&&tone('sine',660,660,.35,.07),260)}}
+
+// ---------- Heartland MRT (20 stations) ----------
+const MRT_NAMES=['Jurong East','Bukit Batok','Bukit Gombak','Choa Chu Kang','Yew Tee','Kranji','Marsiling','Woodlands','Admiralty','Sembawang',
+  'Canberra','Yishun','Khatib','Yio Chu Kang','Ang Mo Kio','Bishan','Braddell','Toa Payoh','Novena','Newton'];
+const dirOf=(dx,dz)=>dx>0?1:dx<0?3:dz>0?2:0;
+function cornerMeta(prev,cur,next){const din=dirOf(cur[0]-prev[0],cur[1]-prev[1]),dout=dirOf(next[0]-cur[0],next[1]-cur[1]);const back=(din+2)&3;
+  for(let k=2;k<=5;k++){const c=railConns(k);if(c.includes(back)&&c.includes(dout))return k}return 0}
+function buildMRT(B,L){const g=20,TY=30;L.ground=g;const res=[];
+  const C=[[-300,-200],[300,-200],[300,40],[140,40],[140,200],[-300,200]];const perSeg=[6,2,1,1,5,5];
+  const roadsX=[-160,0,160],roadsZ=[-100,0,100];const EXT=360;
+  // roads
+  for(const z of roadsZ){B.fill(-EXT,g,z-4,EXT,g,z+4,62);B.fill(-EXT,g,z-6,EXT,g,z-5,21);B.fill(-EXT,g,z+5,EXT,g,z+6,21);for(let t=-EXT;t<EXT;t+=6)B.fill(t,g,z,t+2,g,z,61);res.push([-EXT,z-7,EXT,z+7])}
+  for(const x of roadsX){B.fill(x-4,g,-EXT,x+4,g,EXT,62);B.fill(x-6,g,-EXT,x-5,g,EXT,21);B.fill(x+5,g,-EXT,x+6,g,EXT,21);for(let t=-EXT;t<EXT;t+=6)B.fill(x,g,t,x,g,t+2,61);res.push([x-7,-EXT,x+7,EXT])}
+  for(const x of roadsX)for(const z of roadsZ)B.fill(x-6,g,z-6,x+6,g,z+6,62);
+  const nearRoad=(ax,v)=>(ax==='x'?roadsX:roadsZ).some(r=>Math.abs(v-r)<9);
+  // viaduct
+  const stations=[];let ni=0;
+  for(let i=0;i<C.length;i++){const [x0,z0]=C[i],[x1,z1]=C[(i+1)%C.length];const alongX=z0===z1;const c=alongX?z0:x0;const a0=alongX?x0:z0,a1=alongX?x1:z1;const a=Math.min(a0,a1),b=Math.max(a0,a1);const len=b-a;
+    const segSt=[];for(let k=0;k<perSeg[i];k++){const f=(k+.5)/perSeg[i];const t=Math.round(a0+(a1-a0)*f);segSt.push(t);stations.push({ax:alongX?'x':'z',c,t,name:MRT_NAMES[ni],col:[64,67,63,66,65][ni%5]});ni++}
+    const inSt=t=>segSt.some(s=>Math.abs(t-s)<=18);
+    if(alongX){B.fill(a-2,TY-1,c-2,b+2,TY-1,c+2,62);for(let t=a-2;t<=b+2;t++)if(!inSt(t)){B.set(t,TY,c-2,61);B.set(t,TY,c+2,61)}B.fill(a,TY,c,b,TY,c,60,0);
+      for(let t=a;t<=b;t+=10){if(nearRoad('x',t))continue;B.fill(t-1,g+1,c-1,t,TY-3,c,62);B.fill(t-2,TY-2,c-2,t+1,TY-2,c+2,61)}res.push([a-3,c-3,b+3,c+3])}
+    else{B.fill(c-2,TY-1,a-2,c+2,TY-1,b+2,62);for(let t=a-2;t<=b+2;t++)if(!inSt(t)){B.set(c-2,TY,t,61);B.set(c+2,TY,t,61)}B.fill(c,TY,a,c,TY,b,60,1);
+      for(let t=a;t<=b;t+=10){if(nearRoad('z',t))continue;B.fill(c-1,g+1,t-1,c,TY-3,t,62);B.fill(c-2,TY-2,t-2,c+2,TY-2,t+1,61)}res.push([c-3,a-3,c+3,b+3])}}
+  C.forEach((p,i)=>B.set(p[0],TY,p[1],60,cornerMeta(C[(i+C.length-1)%C.length],p,C[(i+1)%C.length])));
+  // stations
+  for(const s of stations){const P=(t,o,y)=>s.ax==='x'?[t,y,s.c+o]:[s.c+o,y,t];
+    const box=(t0,o0,y0,t1,o1,y1,id,m=0)=>{const p=P(t0,o0,y0),q=P(t1,o1,y1);B.fill(p[0],p[1],p[2],q[0],q[1],q[2],id,m)};
+    const A=s.t-18,Z=s.t+18;
+    for(const side of [-1,1]){box(A,side*2,TY-1,Z,side*6,TY,61);
+      for(let t=A;t<=Z;t++){const gap=((t-A)%7===3||(t-A)%7===4);if(!gap){const q=P(t,side*2,TY+1);B.set(q[0],q[1],q[2],10)}}
+      for(let t=A;t<=Z;t+=6)box(t,side*6,TY+1,t,side*6,TY+5,62);
+      for(let i=0;i<10;i++)box(s.t-4,side*(7+i),g+1,s.t-2,side*(7+i),TY-i,21)}
+    box(A-1,-7,TY+6,Z+1,7,TY+6,s.col);box(A-1,-7,TY+5,Z+1,-7,TY+5,61);box(A-1,7,TY+5,Z+1,7,TY+5,61);
+    for(let t=A;t<=Z;t+=6)for(const o of [-4,0,4]){const q=P(t,o,TY+6);B.set(q[0],q[1],q[2],35)}
+    const r=s.ax==='x'?[A-2,s.c-18,Z+2,s.c+18]:[s.c-18,A-2,s.c+18,Z+2];res.push(r);
+    const lp=P(s.t,0,TY+9);s.label=[lp[0]+.5,lp[1],lp[2]+.5]}
+  // HDB estates near every station, hawker centres every fourth station
+  const rnd=mulberry32(6060);
+  const hdb=(x0,z0,len,dep,fl,accent,alongZ)=>{const W_=alongZ?dep:len,Dp=alongZ?len:dep;const x1=x0+W_-1,z1=z0+Dp-1;const top=g+3+fl*3;res.push([x0-3,z0-3,x1+3,z1+3]);
+    B.add([x0,g,z0,x1,top+4,z1],(x,y,z)=>{const ex=x===x0||x===x1,ez=z===z0||z===z1,edge=ex||ez;const lx=alongZ?z-z0:x-x0;const shortSide=alongZ?ez:ex;
+      if(y===g)return[21,0];
+      if(y<=g+3){if(y===g+3)return[61,0];const pil=(ex&&ez)||(edge&&lx%4===0);return pil?[62,0]:[0,0]}
+      if(y>top){if(y===top+1)return edge?[accent,0]:null;const tank=Math.abs(x-(x0+x1)/2)<2.5&&Math.abs(z-(z0+z1)/2)<2&&y<=top+3;return tank?[62,0]:[0,0]}
+      const fy=(y-g-3)%3;if(fy===0)return[edge?(shortSide?accent:61):61,0];
+      if(!edge)return[0,0];if(shortSide)return[accent,0];if(lx%3===0)return[(lx%6===0)?accent:61,0];return[10,0]})};
+  const hawker=(hx,hz)=>{res.push([hx-2,hz-2,hx+21,hz+15]);B.fill(hx,g,hz,hx+19,g,hz+13,21);
+    B.add([hx,g+1,hz,hx+19,g+8,hz+13],(x,y,z)=>{const lx=x-hx,lz=z-hz;const pil=lx%5===0&&lz%6===0;
+      if(y<=g+4)return pil?[62,0]:(y===g+1&&lx%5===2&&lz%3===1)?[7,0]:[0,0];if(y===g+5)return[63,0];if(y===g+6)return(lx>1&&lx<18&&lz>1&&lz<12)?[63,0]:[0,0];if(y===g+7)return(lx>4&&lx<15&&lz>4&&lz<9)?[63,0]:[0,0];return[0,0]});
+    for(let lx=2;lx<19;lx+=5)B.set(hx+lx,g+4,hz+7,35)};
+  const accents=[63,64,65,66,67];
+  stations.forEach((s,si)=>{const alongZ=s.ax==='z';let placed=0;
+    for(let k=0;k<40&&placed<4;k++){const side=k%2?1:-1;const off=16+(rnd()*34|0);const along=s.t-30+(rnd()*44|0);
+      const len=26,dep=8;let x0,z0;if(!alongZ){x0=along;z0=side>0?s.c+off:s.c-off-dep}else{z0=along;x0=side>0?s.c+off:s.c-off-dep}
+      const x1=x0+(alongZ?dep:len)-1,z1=z0+(alongZ?len:dep)-1;if(!freeRect(res,x0-3,z0-3,x1+3,z1+3))continue;
+      hdb(x0,z0,len,dep,10+(rnd()*7|0),accents[(si+placed)%5],alongZ);placed++}
+    if(si%4===1){for(let k=0;k<20;k++){const side=k%2?1:-1;const off=18+(rnd()*20|0);const along=s.t-10+(rnd()*20|0);let hx,hz;if(!alongZ){hx=along;hz=side>0?s.c+off:s.c-off-14}else{hz=along;hx=side>0?s.c+off:s.c-off-20}
+      if(freeRect(res,hx-3,hz-3,hx+22,hz+16)){hawker(hx,hz);break}}}});
+  let n=0;for(let i=0;i<3000&&n<260;i++){const x=Math.round(rnd()*680-340),z=Math.round(rnd()*680-340);if(freeRect(res,x-6,z-6,x+6,z+6)){rainTree(B,x,z,g);res.push([x-6,z-6,x+6,z+6]);n++}}
+  const path=loopPath(C,TY+.02);const stops=stations.map(s=>s.ax==='x'?[s.t+.5,s.c+.5,s.name]:[s.c+.5,s.t+.5,s.name]);
+  for(const st of [0,7,14])L.trains.push({kind:'mrt',path,stops,speed:14,startStop:st});
+  L.labels=stations.map(s=>({pos:s.label,text:s.name}));
+  const s0=stations[0];L.spawn=[s0.t+6.5,TY+1.01,s0.c+4.5];L.time=.3}
+// station name boards (created only near the player)
+const stationLabels=[];const labelActive=new Map();let labelT=0;
+function makeStationLabels(){clearStationLabels()}
+function labelSprite(lb){const c=document.createElement('canvas');const x=c.getContext('2d');const font='700 30px "Pixelify Sans", monospace';x.font=font;
+  const code=lb.code||'';const cw=code?Math.ceil(x.measureText(code).width)+24:0;const w=Math.ceil(x.measureText(lb.text).width)+cw+36;c.width=w;c.height=60;x.font=font;
+  x.fillStyle='#14202b';x.fillRect(0,0,w,60);const col='#'+((lb.color||0xc8102e)>>>0).toString(16).padStart(6,'0');x.fillStyle=col;x.fillRect(0,0,w,7);
+  x.textBaseline='middle';if(code){x.fillStyle=col;x.fillRect(12,14,cw-6,36);x.fillStyle='#ffffff';x.fillText(code,22,33)}x.fillStyle='#ffffff';x.fillText(lb.text,cw+18,33);
+  const tex=new THREE.CanvasTexture(c);tex.minFilter=THREE.LinearFilter;const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,fog:false}));const sc=.055;sp.scale.set(w*sc,60*sc,1);sp.position.set(...lb.pos);return sp}
+function updateLabels(dt,vis){labelT-=dt;if(labelT>0)return;labelT=1;const defs=(W&&W.layout&&W.layout.labels)||[];
+  for(let i=0;i<defs.length;i++){const lb=defs[i];const d=Math.hypot(lb.pos[0]-player.pos.x,lb.pos[2]-player.pos.z);const sp=labelActive.get(i);
+    if(vis&&d<260){if(!sp){const s2=labelSprite(lb);scene.add(s2);labelActive.set(i,s2)}}else if(sp&&(d>320||!vis)){scene.remove(sp);sp.material.map.dispose();sp.material.dispose();labelActive.delete(i)}}}
+function clearStationLabels(){for(const sp of labelActive.values()){scene.remove(sp);sp.material.map.dispose();sp.material.dispose()}labelActive.clear();labelT=0}
+function announce(tr,kind,idx){if(!(player.riding&&player.riding.train===tr)||!tr.stopNames)return;let name;
+  if(kind==='arrive')name=tr.stopNames[idx];else{let best=-1,bd=1e9;tr.stops.forEach((s,i)=>{const d=((s-tr.s)%tr.total+tr.total)%tr.total;if(d>.05&&d<bd){bd=d;best=i}});name=tr.stopNames[best]}if(!name)return;const msg=kind==='arrive'?`Arriving at ${name}`:`Next station: ${name}`;toast(msg);
+  if(actx){tone('sine',880,880,.2,.06);setTimeout(()=>actx&&tone('sine',660,660,.3,.06),240)}if(settings.voice)setTimeout(()=>speak(msg,{name:'Announcer',pitch:1}),500)}
+
+// ---------- Singapore MRT network (all 6 lines, 146 stations as of July 2026) ----------
+const SGNET={"G":40,"lines":{"NSL":{"loop":false,"level":50,"color":13905426,"elev":true,"path":[[-1172,-419],[-1172,-600],[-1094,-600],[-1094,-700],[-1065,-700],[-1065,-955],[-1116,-955],[-1116,-1074],[-1078,-1074],[-1078,-1344],[-917,-1344],[-917,-1442],[-771,-1442],[-771,-1488],[-645,-1488],[-645,-1528],[-498,-1528],[-498,-1610],[-229,-1610],[-229,-1535],[-177,-1535],[-177,-1415],[-201,-1415],[-201,-1308],[-79,-1308],[-79,-994],[-28,-994],[-28,-890],[-48,-890],[-48,-721],[-68,-721],[-68,-629],[-62,-629],[-62,-559],[-128,-559],[-128,-445],[-234,-445],[-234,-341],[-330,-341],[-330,-165],[-192,-165],[-192,-139],[10,-139],[10,-20],[-9,-20],[-9,126],[43,126],[43,315],[217,315]],"st":[["NS1","Jurong East",-1172,-455,"z",36,[[1,-4,7],[-1,-4,7]]],["NS2","Bukit Batok",-1094,-624,"z",283,[[1,-4,7],[-1,-4,7]]],["NS3","Bukit Gombak",-1065,-724,"z",412,[[1,-4,7],[-1,-4,7]]],["NS4","Choa Chu Kang",-1116,-979,"z",718,[[1,-4,7],[-1,-4,7]]],["NS5","Yew Tee",-1078,-1098,"z",875,[[1,-4,7],[-1,-4,7]]],["NS7","Kranji",-917,-1368,"z",1306,[[1,-4,7],[-1,-4,7]]],["NS8","Marsiling",-795,-1442,"x",1502,[[1,-4,7],[-1,-4,7]]],["NS9","Woodlands",-669,-1488,"x",1674,[[1,-4,7],[-1,-4,7]]],["NS10","Admiralty",-522,-1528,"x",1861,[[1,-4,7],[-1,-4,7]]],["NS11","Sembawang",-326,-1610,"x",2139,[[1,-4,7],[-1,-4,7]]],["NS12","Canberra",-229,-1559,"z",2287,[[1,-4,7],[-1,-4,7]]],["NS13","Yishun",-177,-1439,"z",2459,[[1,-4,7],[-1,-4,7]]],["NS14","Khatib",-201,-1332,"z",2590,[[1,-4,7],[-1,-4,7]]],["NS15","Yio Chu Kang",-79,-1018,"z",3026,[[1,-4,7],[-1,-4,7]]],["NS16","Ang Mo Kio",-28,-914,"z",3181,[[1,-4,7],[-1,-4,7]]],["NS17","Bishan",-48,-745,"z",3370,[[1,-4,7],[-1,-4,7]]],["NS18","Braddell",-68,-653,"z",3482,[[1,-4,7],[-1,-4,7]]],["NS19","Toa Payoh",-62,-583,"z",3558,[[1,-4,7],[-1,-4,7]]],["NS20","Novena",-128,-469,"z",3738,[[1,-4,7],[-1,-4,7]]],["NS21","Newton",-234,-365,"z",3948,[[1,-4,7],[-1,-4,7]]],["NS22","Orchard",-330,-227,"z",4182,[[1,-4,7],[-1,-4,7]]],["NS23","Somerset",-216,-165,"x",4358,[[1,-4,7],[-1,-4,7]]],["NS24","Dhoby Ghaut",-98,-139,"x",4502,[[1,-4,7],[-1,-4,7]]],["NS25","City Hall",10,-44,"z",4705,[[1,-4,7],[-1,-4,7]]],["NS26","Raffles Place",-9,102,"z",4870,[[1,-4,7],[-1,-4,7]]],["NS27","Marina Bay",43,230,"z",5050,[[1,-4,7],[-1,-4,7]]],["NS28","Marina South Pier",181,315,"x",5273,[[1,-4,7],[-1,-4,7]]]],"len":5309,"pil":[[-1172,-424],[-1172,-434],[-1172,-444],[-1172,-454],[-1172,-464],[-1172,-474],[-1172,-484],[-1172,-494],[-1172,-504],[-1172,-514],[-1172,-524],[-1172,-534],[-1172,-544],[-1172,-554],[-1172,-564],[-1172,-574],[-1172,-584],[-1172,-594],[-1167,-600],[-1157,-600],[-1147,-600],[-1137,-600],[-1127,-600],[-1117,-600],[-1107,-600],[-1094,-605],[-1094,-615],[-1094,-625],[-1094,-635],[-1094,-645],[-1094,-655],[-1094,-665],[-1094,-675],[-1094,-685],[-1094,-695],[-1089,-700],[-1079,-700],[-1065,-705],[-1065,-715],[-1065,-725],[-1065,-735],[-1065,-745],[-1065,-755],[-1065,-765],[-1065,-775],[-1065,-785],[-1065,-795],[-1065,-805],[-1065,-815],[-1065,-825],[-1065,-835],[-1065,-845],[-1065,-855],[-1065,-865],[-1065,-875],[-1065,-885],[-1065,-895],[-1065,-905],[-1065,-915],[-1065,-925],[-1065,-935],[-1065,-945],[-1070,-955],[-1080,-955],[-1090,-955],[-1100,-955],[-1110,-955],[-1116,-960],[-1116,-970],[-1116,-980],[-1116,-990],[-1116,-1000],[-1116,-1010],[-1116,-1020],[-1116,-1030],[-1116,-1040],[-1116,-1050],[-1116,-1060],[-1111,-1074],[-1101,-1074],[-1091,-1074],[-1078,-1079],[-1078,-1089],[-1078,-1099],[-1078,-1109],[-1078,-1119],[-1078,-1129],[-1078,-1139],[-1078,-1149],[-1078,-1159],[-1078,-1169],[-1078,-1179],[-1078,-1189],[-1078,-1199],[-1078,-1209],[-1078,-1219],[-1078,-1229],[-1078,-1239],[-1078,-1249],[-1078,-1259],[-1078,-1269],[-1078,-1279],[-1078,-1289],[-1078,-1299],[-1078,-1309],[-1078,-1319],[-1078,-1329],[-1078,-1339],[-1073,-1344],[-1063,-1344],[-1053,-1344],[-1043,-1344],[-1033,-1344],[-1023,-1344],[-1013,-1344],[-1003,-1344],[-993,-1344],[-983,-1344],[-973,-1344],[-963,-1344],[-953,-1344],[-943,-1344],[-933,-1344],[-923,-1344],[-917,-1349],[-917,-1359],[-917,-1369],[-917,-1379],[-917,-1389],[-917,-1399],[-917,-1409],[-917,-1419],[-917,-1429],[-912,-1442],[-902,-1442],[-892,-1442],[-882,-1442],[-872,-1442],[-862,-1442],[-852,-1442],[-842,-1442],[-832,-1442],[-822,-1442],[-812,-1442],[-802,-1442],[-792,-1442],[-782,-1442],[-771,-1447],[-771,-1457],[-771,-1467],[-771,-1477],[-766,-1488],[-756,-1488],[-746,-1488],[-736,-1488],[-726,-1488],[-716,-1488],[-706,-1488],[-696,-1488],[-686,-1488],[-676,-1488],[-666,-1488],[-656,-1488],[-645,-1493],[-645,-1503],[-645,-1513],[-645,-1523],[-640,-1528],[-630,-1528],[-620,-1528],[-610,-1528],[-600,-1528],[-590,-1528],[-580,-1528],[-570,-1528],[-560,-1528],[-550,-1528],[-540,-1528],[-530,-1528],[-520,-1528],[-510,-1528],[-498,-1533],[-498,-1543],[-498,-1553],[-498,-1563],[-498,-1573],[-498,-1583],[-498,-1593],[-498,-1603],[-493,-1610],[-483,-1610],[-473,-1610],[-463,-1610],[-453,-1610],[-443,-1610],[-433,-1610],[-423,-1610],[-413,-1610],[-403,-1610],[-393,-1610],[-383,-1610],[-373,-1610],[-363,-1610],[-353,-1610],[-343,-1610],[-333,-1610],[-323,-1610],[-313,-1610],[-303,-1610],[-293,-1610],[-283,-1610],[-273,-1610],[-263,-1610],[-253,-1610],[-243,-1610],[-229,-1605],[-229,-1595],[-229,-1585],[-229,-1575],[-229,-1565],[-229,-1555],[-229,-1545],[-224,-1535],[-214,-1535],[-204,-1535],[-194,-1535],[-184,-1535],[-177,-1530],[-177,-1520],[-177,-1510],[-177,-1500],[-177,-1490],[-177,-1480],[-177,-1470],[-177,-1460],[-177,-1450],[-177,-1440],[-177,-1430],[-177,-1420],[-182,-1415],[-192,-1415],[-201,-1410],[-201,-1400],[-201,-1390],[-201,-1380],[-201,-1370],[-201,-1360],[-201,-1350],[-201,-1340],[-201,-1330],[-201,-1320],[-196,-1308],[-186,-1308],[-176,-1308],[-166,-1308],[-156,-1308],[-146,-1308],[-136,-1308],[-126,-1308],[-116,-1308],[-106,-1308],[-96,-1308],[-86,-1308],[-79,-1303],[-79,-1293],[-79,-1283],[-79,-1273],[-79,-1263],[-79,-1253],[-79,-1243],[-79,-1233],[-79,-1223],[-79,-1213],[-79,-1203],[-79,-1193],[-79,-1183],[-79,-1173],[-79,-1163],[-79,-1153],[-79,-1143],[-79,-1133],[-79,-1123],[-79,-1113],[-79,-1103],[-79,-1093],[-79,-1083],[-79,-1073],[-79,-1063],[-79,-1053],[-79,-1043],[-79,-1033],[-79,-1023],[-79,-1013],[-79,-1003],[-74,-994],[-64,-994],[-54,-994],[-44,-994],[-34,-994],[-28,-989],[-28,-979],[-28,-969],[-28,-959],[-28,-949],[-28,-939],[-28,-929],[-28,-919],[-28,-909],[-28,-899],[-33,-890],[-43,-890],[-48,-885],[-48,-875],[-48,-865],[-48,-855],[-48,-845],[-48,-835],[-48,-825],[-48,-815],[-48,-805],[-48,-795],[-48,-785],[-48,-775],[-48,-765],[-48,-755],[-48,-745],[-48,-735],[-53,-721],[-63,-721],[-68,-716],[-68,-706],[-68,-696],[-68,-686],[-68,-676],[-68,-666],[-68,-656],[-68,-646],[-68,-636],[-62,-624],[-62,-614],[-62,-604],[-62,-594],[-62,-584],[-62,-574],[-62,-564],[-67,-559],[-77,-559],[-87,-559],[-97,-559],[-107,-559],[-117,-559],[-128,-554],[-128,-544],[-128,-534],[-128,-524],[-128,-514],[-128,-504],[-128,-494],[-128,-484],[-128,-474],[-128,-464],[-128,-454],[-133,-445],[-143,-445],[-153,-445],[-163,-445],[-173,-445],[-183,-445],[-193,-445],[-203,-445],[-213,-445],[-223,-445],[-234,-440],[-234,-430],[-234,-420],[-234,-410],[-234,-400],[-234,-370],[-234,-360],[-234,-350],[-239,-341],[-249,-341],[-259,-341],[-269,-341],[-279,-341],[-289,-341],[-299,-341],[-309,-341],[-319,-341],[-330,-336],[-330,-326],[-330,-316],[-330,-306],[-330,-296],[-330,-286],[-330,-276],[-330,-266],[-330,-256],[-330,-246],[-330,-236],[-330,-226],[-330,-216],[-330,-206],[-330,-196],[-330,-186],[-330,-176],[-325,-165],[-315,-165],[-305,-165],[-295,-165],[-285,-165],[-275,-165],[-265,-165],[-255,-165],[-245,-165],[-235,-165],[-225,-165],[-215,-165],[-205,-165],[-192,-160],[-192,-150],[-187,-139],[-177,-139],[-167,-139],[-157,-139],[-147,-139],[-137,-139],[-127,-139],[-117,-139],[-107,-139],[-97,-139],[-87,-139],[-77,-139],[-67,-139],[-57,-139],[-47,-139],[-37,-139],[-7,-139],[3,-139],[10,-134],[10,-124],[10,-114],[10,-104],[10,-94],[10,-84],[10,-74],[10,-64],[10,-54],[10,-44],[10,-34],[5,-20],[-9,-15],[-9,-5],[-9,5],[-9,15],[-9,25],[-9,35],[-9,45],[-9,55],[-9,65],[-9,75],[-9,85],[-9,95],[-9,105],[-9,115],[-4,126],[6,126],[16,126],[26,126],[36,126],[43,131],[43,141],[43,151],[43,161],[43,171],[43,181],[43,191],[43,201],[43,211],[43,221],[43,231],[43,251],[43,261],[43,271],[43,281],[43,291],[43,301],[48,315],[58,315],[68,315],[78,315],[88,315],[98,315],[108,315],[118,315],[128,315],[138,315],[148,315],[158,315],[168,315],[178,315],[188,315],[198,315],[208,315]]},"EWL":{"loop":false,"level":58,"color":38469,"elev":true,"path":[[1026,-903],[1026,-843],[1003,-843],[1003,-650],[1089,-650],[1089,-402],[911,-402],[911,-381],[754,-381],[754,-366],[706,-366],[706,-377],[662,-377],[662,-365],[614,-365],[614,-375],[564,-375],[564,-363],[516,-363],[516,-375],[460,-375],[460,-366],[339,-366],[339,-342],[205,-342],[205,-283],[62,-283],[62,-145],[10,-145],[10,-20],[-9,-20],[-9,229],[-183,229],[-183,175],[-393,175],[-393,68],[-499,68],[-499,11],[-620,11],[-620,-129],[-683,-129],[-683,-204],[-831,-204],[-831,-244],[-950,-244],[-950,-275],[-1148,-275],[-1148,-455],[-1232,-455],[-1232,-544],[-1337,-544],[-1337,-557],[-1474,-557],[-1474,-493],[-1554,-493],[-1554,-479],[-1727,-479],[-1727,-375],[-1888,-375],[-1888,-290],[-1990,-290],[-1990,-303],[-2097,-303],[-2097,-467],[-2119,-467],[-2119,-527]],"st":[["EW1","Pasir Ris",1026,-867,"z",36,[[1,-4,7],[-1,-4,7]]],["EW2","Tampines",1003,-674,"z",252,[[1,-4,7],[-1,-4,7]]],["EW3","Simei",1089,-565,"z",447,[[1,-4,7],[-1,-4,7]]],["EW4","Tanah Merah",1035,-402,"x",664,[[1,-4,10],[-1,-4,10]]],["EW5","Bedok",887,-381,"x",833,[[1,-4,7],[-1,-4,7]]],["EW6","Kembangan",730,-366,"x",1005,[[1,-4,7],[-1,-4,7]]],["EW7","Eunos",638,-365,"x",1120,[[1,-4,7],[-1,-4,7]]],["EW8","Paya Lebar",540,-363,"x",1240,[[1,-4,7],[-1,-4,7]]],["EW9","Aljunied",436,-366,"x",1365,[[1,-4,7],[-1,-4,7]]],["EW10","Kallang",315,-342,"x",1510,[[1,-4,7],[-1,-4,7]]],["EW11","Lavender",181,-283,"x",1703,[[1,-4,7],[-1,-4,7]]],["EW12","Bugis",62,-169,"z",1936,[[1,-12,7],[-1,-4,7]]],["EW13","City Hall",10,-44,"z",2113,[[1,4,10],[-1,4,10]]],["EW14","Raffles Place",-9,102,"z",2278,[[1,4,10],[-1,4,10]]],["EW15","Tanjong Pagar",-102,229,"x",2498,[[1,-4,7],[-1,-4,7]]],["EW16","Outram Park",-207,175,"x",2657,[[1,-4,7],[-1,-4,7]]],["EW17","Tiong Bahru",-417,68,"x",2974,[[1,-4,7],[-1,-4,7]]],["EW18","Redhill",-523,11,"x",3137,[[1,-4,7],[-1,-4,7]]],["EW19","Queenstown",-620,-61,"z",3306,[[1,-4,7],[-1,-4,7]]],["EW20","Commonwealth",-683,-153,"z",3461,[[1,-4,7],[-1,-4,7]]],["EW21","Buona Vista",-753,-204,"x",3582,[[1,-4,7],[-1,-4,7]]],["EW22","Dover",-855,-244,"x",3724,[[1,-4,7],[-1,-4,7]]],["EW23","Clementi",-974,-275,"x",3874,[[1,-4,7],[-1,-4,7]]],["EW24","Jurong East",-1172,-455,"x",4252,[[1,-12,7],[-1,-12,7]]],["EW25","Chinese Garden",-1256,-544,"x",4425,[[1,-4,7],[-1,-4,7]]],["EW26","Lakeside",-1361,-557,"x",4543,[[1,-4,7],[-1,-4,7]]],["EW27","Boon Lay",-1498,-493,"x",4744,[[1,-4,7],[-1,-4,7]]],["EW28","Pioneer",-1578,-479,"x",4838,[[1,-4,7],[-1,-4,7]]],["EW29","Joo Koon",-1751,-375,"x",5115,[[1,-4,7],[-1,-4,7]]],["EW30","Gul Circle",-1912,-290,"x",5361,[[1,-4,7],[-1,-4,7]]],["EW31","Tuas Crescent",-2014,-303,"x",5476,[[1,-4,7],[-1,-4,7]]],["EW32","Tuas West Road",-2097,-389,"z",5645,[[1,-4,7],[-1,-4,7]]],["EW33","Tuas Link",-2119,-491,"z",5769,[[1,-4,7],[-1,-4,7]]]],"len":5805,"pil":[[1026,-898],[1026,-888],[1026,-878],[1026,-868],[1026,-858],[1026,-848],[1021,-843],[1011,-843],[1003,-838],[1003,-828],[1003,-818],[1003,-808],[1003,-798],[1003,-788],[1003,-778],[1003,-768],[1003,-758],[1003,-748],[1003,-738],[1003,-728],[1003,-718],[1003,-708],[1003,-678],[1003,-668],[1003,-658],[1008,-650],[1018,-650],[1028,-650],[1038,-650],[1048,-650],[1058,-650],[1068,-650],[1078,-650],[1089,-645],[1089,-635],[1089,-625],[1089,-615],[1089,-605],[1089,-595],[1089,-585],[1089,-575],[1089,-565],[1089,-555],[1089,-545],[1089,-535],[1089,-525],[1089,-515],[1089,-505],[1089,-495],[1089,-485],[1089,-475],[1089,-465],[1089,-455],[1089,-445],[1089,-435],[1089,-425],[1089,-415],[1084,-402],[1074,-402],[1064,-402],[994,-402],[984,-402],[974,-402],[964,-402],[954,-402],[944,-402],[934,-402],[924,-402],[911,-397],[911,-387],[906,-381],[896,-381],[886,-381],[876,-381],[866,-381],[856,-381],[846,-381],[836,-381],[826,-381],[816,-381],[806,-381],[796,-381],[786,-381],[776,-381],[766,-381],[754,-376],[749,-366],[739,-366],[729,-366],[719,-366],[706,-371],[701,-377],[691,-377],[681,-377],[671,-377],[662,-372],[657,-365],[647,-365],[637,-365],[627,-365],[614,-370],[609,-375],[599,-375],[589,-375],[579,-375],[569,-375],[564,-370],[559,-363],[549,-363],[539,-363],[529,-363],[516,-368],[511,-375],[501,-375],[491,-375],[481,-375],[471,-375],[455,-366],[445,-366],[435,-366],[425,-366],[415,-366],[405,-366],[395,-366],[385,-366],[375,-366],[365,-366],[355,-366],[345,-366],[339,-361],[339,-351],[334,-342],[324,-342],[314,-342],[304,-342],[294,-342],[284,-342],[274,-342],[264,-342],[254,-342],[244,-342],[234,-342],[224,-342],[214,-342],[205,-337],[205,-327],[205,-317],[205,-307],[205,-297],[200,-283],[190,-283],[180,-283],[170,-283],[160,-283],[150,-283],[140,-283],[130,-283],[120,-283],[110,-283],[100,-283],[90,-283],[80,-283],[70,-283],[62,-278],[62,-218],[62,-208],[62,-198],[62,-188],[62,-178],[62,-168],[62,-158],[57,-145],[47,-145],[37,-145],[27,-145],[17,-145],[-9,135],[-9,145],[-9,155],[-9,165],[-9,195],[-9,205],[-9,215],[-14,229],[-24,229],[-34,229],[-54,229],[-64,229],[-74,229],[-84,229],[-94,229],[-104,229],[-114,229],[-124,229],[-134,229],[-144,229],[-154,229],[-164,229],[-174,229],[-183,224],[-183,214],[-183,204],[-183,194],[-183,184],[-188,175],[-198,175],[-208,175],[-218,175],[-228,175],[-238,175],[-248,175],[-258,175],[-268,175],[-278,175],[-288,175],[-298,175],[-308,175],[-318,175],[-328,175],[-338,175],[-348,175],[-358,175],[-368,175],[-378,175],[-388,175],[-393,170],[-393,160],[-393,150],[-393,140],[-393,130],[-393,120],[-393,110],[-393,100],[-393,90],[-393,80],[-398,68],[-408,68],[-418,68],[-428,68],[-438,68],[-448,68],[-458,68],[-468,68],[-478,68],[-488,68],[-499,63],[-499,53],[-499,43],[-499,33],[-499,23],[-504,11],[-514,11],[-524,11],[-534,11],[-544,11],[-554,11],[-564,11],[-574,11],[-584,11],[-594,11],[-604,11],[-614,11],[-620,6],[-620,-4],[-620,-14],[-620,-24],[-620,-34],[-620,-44],[-620,-54],[-620,-64],[-620,-74],[-620,-84],[-620,-94],[-620,-104],[-620,-114],[-620,-124],[-625,-129],[-635,-129],[-645,-129],[-655,-129],[-665,-129],[-675,-129],[-683,-134],[-683,-144],[-683,-154],[-683,-164],[-683,-174],[-683,-184],[-683,-194],[-688,-204],[-698,-204],[-708,-204],[-718,-204],[-728,-204],[-738,-204],[-748,-204],[-758,-204],[-768,-204],[-778,-204],[-788,-204],[-798,-204],[-808,-204],[-818,-204],[-831,-209],[-831,-219],[-831,-229],[-831,-239],[-836,-244],[-846,-244],[-856,-244],[-866,-244],[-876,-244],[-886,-244],[-896,-244],[-906,-244],[-916,-244],[-926,-244],[-936,-244],[-950,-249],[-950,-259],[-950,-269],[-955,-275],[-965,-275],[-975,-275],[-985,-275],[-995,-275],[-1005,-275],[-1015,-275],[-1025,-275],[-1035,-275],[-1045,-275],[-1055,-275],[-1065,-275],[-1075,-275],[-1085,-275],[-1095,-275],[-1105,-275],[-1115,-275],[-1125,-275],[-1135,-275],[-1148,-280],[-1148,-290],[-1148,-300],[-1148,-310],[-1148,-320],[-1148,-330],[-1148,-340],[-1148,-350],[-1148,-360],[-1148,-370],[-1148,-380],[-1148,-390],[-1148,-400],[-1148,-410],[-1148,-420],[-1148,-430],[-1148,-440],[-1148,-450],[-1153,-455],[-1163,-455],[-1183,-455],[-1193,-455],[-1203,-455],[-1213,-455],[-1223,-455],[-1232,-460],[-1232,-470],[-1232,-480],[-1232,-490],[-1232,-500],[-1232,-510],[-1232,-520],[-1232,-530],[-1237,-544],[-1247,-544],[-1257,-544],[-1267,-544],[-1277,-544],[-1287,-544],[-1297,-544],[-1307,-544],[-1317,-544],[-1327,-544],[-1337,-549],[-1342,-557],[-1352,-557],[-1362,-557],[-1372,-557],[-1382,-557],[-1392,-557],[-1402,-557],[-1412,-557],[-1422,-557],[-1432,-557],[-1442,-557],[-1452,-557],[-1462,-557],[-1474,-552],[-1474,-542],[-1474,-532],[-1474,-522],[-1474,-512],[-1474,-502],[-1479,-493],[-1489,-493],[-1499,-493],[-1509,-493],[-1519,-493],[-1529,-493],[-1539,-493],[-1549,-493],[-1554,-488],[-1559,-479],[-1569,-479],[-1579,-479],[-1589,-479],[-1599,-479],[-1609,-479],[-1619,-479],[-1629,-479],[-1639,-479],[-1649,-479],[-1659,-479],[-1669,-479],[-1679,-479],[-1689,-479],[-1699,-479],[-1709,-479],[-1719,-479],[-1727,-474],[-1727,-464],[-1727,-454],[-1727,-444],[-1727,-434],[-1727,-424],[-1727,-414],[-1727,-404],[-1727,-394],[-1727,-384],[-1732,-375],[-1742,-375],[-1752,-375],[-1762,-375],[-1772,-375],[-1782,-375],[-1792,-375],[-1802,-375],[-1812,-375],[-1822,-375],[-1832,-375],[-1842,-375],[-1852,-375],[-1862,-375],[-1872,-375],[-1882,-375],[-1888,-370],[-1888,-360],[-1888,-350],[-1888,-340],[-1888,-330],[-1888,-320],[-1888,-310],[-1888,-300],[-1893,-290],[-1903,-290],[-1913,-290],[-1923,-290],[-1933,-290],[-1943,-290],[-1953,-290],[-1963,-290],[-1973,-290],[-1983,-290],[-1990,-295],[-1995,-303],[-2005,-303],[-2015,-303],[-2025,-303],[-2035,-303],[-2045,-303],[-2055,-303],[-2065,-303],[-2075,-303],[-2085,-303],[-2097,-308],[-2097,-318],[-2097,-328],[-2097,-338],[-2097,-348],[-2097,-358],[-2097,-368],[-2097,-378],[-2097,-388],[-2097,-398],[-2097,-408],[-2097,-418],[-2097,-428],[-2097,-438],[-2097,-448],[-2097,-458],[-2102,-467],[-2112,-467],[-2119,-472],[-2119,-482],[-2119,-492],[-2119,-502],[-2119,-512],[-2119,-522]]},"CGL":{"loop":false,"level":50,"color":38469,"elev":true,"path":[[999,-402],[1059,-402],[1059,-470],[1194,-470],[1194,-685],[1438,-685]],"st":[["EW4","Tanah Merah",1035,-402,"x",36,[[1,4,7],[-1,4,7]]],["CG1","Expo",1170,-470,"x",239,[[1,-4,7],[-1,-4,7]]],["CG2","Changi Airport",1402,-685,"x",686,[[1,-4,7],[-1,-4,7]]]],"len":722,"pil":[[1004,-402],[1014,-402],[1024,-402],[1034,-402],[1044,-402],[1054,-402],[1059,-407],[1059,-417],[1059,-427],[1059,-437],[1059,-447],[1059,-457],[1064,-470],[1074,-470],[1084,-470],[1094,-470],[1104,-470],[1114,-470],[1124,-470],[1134,-470],[1144,-470],[1154,-470],[1164,-470],[1194,-475],[1194,-485],[1194,-495],[1194,-505],[1194,-515],[1194,-525],[1194,-535],[1194,-545],[1194,-555],[1194,-565],[1194,-575],[1194,-585],[1194,-595],[1194,-605],[1194,-615],[1194,-625],[1194,-635],[1194,-645],[1194,-655],[1194,-665],[1194,-675],[1199,-685],[1209,-685],[1219,-685],[1229,-685],[1239,-685],[1249,-685],[1259,-685],[1269,-685],[1279,-685],[1289,-685],[1299,-685],[1309,-685],[1319,-685],[1329,-685],[1339,-685],[1349,-685],[1359,-685],[1369,-685],[1379,-685],[1389,-685],[1399,-685],[1409,-685],[1419,-685],[1429,-685]]},"NEL":{"loop":false,"level":20,"color":10027178,"elev":false,"path":[[-471,352],[-411,352],[-411,148],[-191,148],[-191,99],[-91,99],[-91,-132],[-109,-132],[-109,-256],[-57,-256],[-57,-366],[60,-366],[60,-457],[233,-457],[233,-604],[243,-604],[243,-699],[264,-699],[264,-808],[454,-808],[454,-928],[442,-928],[442,-987],[452,-987],[452,-1066],[470,-1066],[470,-1179],[530,-1179],[530,-1269],[613,-1269],[613,-1329]],"st":[["NE1","HarbourFront",-435,352,"x",36,[]],["NE3","Outram Park",-215,148,"x",460,[[1,-19,30],[-1,-4,7]]],["NE4","Chinatown",-143,99,"x",581,[[1,-4,7],[-1,-4,7]]],["NE5","Clarke Quay",-91,32,"z",700,[[1,-4,7],[-1,-4,7]]],["NE6","Dhoby Ghaut",-109,-156,"z",906,[[1,-4,7],[-1,-4,7]]],["NE7","Little India",-57,-280,"z",1082,[[1,-4,7],[-1,-4,7]]],["NE8","Farrer Park",36,-366,"x",1261,[[1,-4,7],[-1,-4,7]]],["NE9","Boon Keng",153,-457,"x",1469,[[1,-4,7],[-1,-4,7]]],["NE10","Potong Pasir",233,-557,"z",1649,[[1,-4,7],[-1,-4,7]]],["NE11","Woodleigh",243,-628,"z",1730,[[1,-4,7],[-1,-4,7]]],["NE12","Serangoon",264,-723,"z",1846,[[1,4,7],[-1,4,7]]],["NE13","Kovan",385,-808,"x",2052,[[1,-4,7],[-1,-4,7]]],["NE14","Hougang",454,-904,"z",2217,[[1,-4,7],[-1,-4,7]]],["NE15","Buangkok",452,-1011,"z",2346,[[1,-4,7],[-1,-4,7]]],["NE16","Sengkang",470,-1090,"z",2443,[[1,-4,7],[-1,-4,7]]],["NE17","Punggol",530,-1203,"z",2616,[[1,-4,7],[-1,-4,7]]],["NE18","Punggol Coast",613,-1293,"z",2789,[[1,-4,7],[-1,-4,7]]]],"len":2825,"pil":[]},"CCL":{"loop":true,"level":13,"color":16424461,"elev":false,"path":[[150,-48],[150,-157],[218,-157],[218,-208],[414,-208],[414,-237],[482,-237],[482,-228],[515,-228],[515,-333],[532,-333],[532,-438],[494,-438],[494,-539],[454,-539],[454,-650],[273,-650],[273,-732],[173,-732],[173,-748],[125,-748],[125,-760],[-11,-760],[-11,-749],[-132,-749],[-132,-722],[-180,-722],[-180,-712],[-141,-712],[-141,-622],[-465,-622],[-465,-418],[-551,-418],[-551,-350],[-669,-350],[-669,-266],[-749,-266],[-749,-173],[-782,-173],[-782,-90],[-809,-90],[-809,-14],[-834,-14],[-834,172],[-721,172],[-721,231],[-610,231],[-610,261],[-543,261],[-543,352],[-411,352],[-411,319],[-346,319],[-346,282],[-193,282],[-193,332],[52,332],[52,164],[118,164],[118,-24],[150,-24]],"st":[["CC4","Promenade",150,-48,"z",0,[[1,-12,7]]],["CC5","Nicoll Highway",194,-157,"x",153,[[1,-4,7],[-1,-4,7]]],["CC6","Stadium",390,-208,"x",400,[[1,-4,7],[-1,-4,7]]],["CC7","Mountbatten",458,-237,"x",497,[[1,-4,7],[-1,-4,7]]],["CC8","Dakota",515,-252,"z",587,[[1,-4,7],[-1,-4,7]]],["CC9","Paya Lebar",532,-357,"z",709,[[1,-4,7],[-1,-4,7]]],["CC10","MacPherson",494,-462,"z",852,[[1,12,7],[-1,-12,7]]],["CC11","Tai Seng",454,-563,"z",993,[[1,-4,7],[-1,-4,7]]],["CC12","Bartley",346,-650,"x",1188,[[1,-4,7],[-1,-4,7]]],["CC13","Serangoon",249,-732,"x",1367,[[1,-16,7],[-1,-4,7]]],["CC14","Lorong Chuan",149,-748,"x",1483,[[1,-4,7],[-1,-4,7]]],["CC15","Bishan",-35,-749,"x",1690,[[1,-4,7],[-1,-4,7]]],["CC16","Marymount",-156,-722,"x",1838,[[-1,-4,7]]],["CC17","Caldecott",-165,-622,"x",2025,[[1,12,7],[-1,-12,7]]],["CC19","Botanic Gardens",-489,-418,"x",2553,[[1,-4,7]]],["CC20","Farrer Road",-575,-350,"x",2707,[[1,-4,7],[-1,-4,7]]],["CC21","Holland Village",-693,-266,"x",2909,[[1,-4,7],[-1,-4,7]]],["CC22","Buona Vista",-749,-197,"z",3034,[[1,-4,7],[-1,-4,7]]],["CC23","one-north",-782,-114,"z",3150,[[1,-4,7],[-1,-4,7]]],["CC24","Kent Ridge",-809,-38,"z",3253,[[1,-4,7],[-1,-4,7]]],["CC25","Haw Par Villa",-834,92,"z",3408,[[1,-4,7],[-1,-4,7]]],["CC26","Pasir Panjang",-745,172,"x",3577,[[1,-4,7],[-1,-4,7]]],["CC27","Labrador Park",-634,231,"x",3747,[[1,-4,7],[-1,-4,7]]],["CC28","Telok Blangah",-567,261,"x",3844,[[1,-4,7],[-1,-4,7]]],["CC29","HarbourFront",-435,352,"x",4067,[[1,-4,10]]],["CC30","Keppel",-370,319,"x",4165,[[1,-4,7],[-1,-4,7]]],["CC31","Cantonment",-217,282,"x",4355,[[1,-4,7],[-1,-4,7]]],["CC32","Prince Edward Road",-15,332,"x",4607,[[1,-4,7],[-1,-4,7]]],["CE2","Marina Bay",52,235,"z",4771,[[1,4,7],[-1,4,7]]],["CE1","Bayfront",118,140,"z",4932,[[1,-4,10]]]],"len":5152,"pil":[]},"CEB":{"loop":false,"level":6,"color":16424461,"elev":false,"path":[[-132,-142],[-72,-142],[-72,-109],[2,-109],[2,-50],[82,-50],[82,-60],[126,-60],[126,-48],[186,-48]],"st":[["CC1","Dhoby Ghaut",-96,-142,"x",36,[[1,-4,30],[-1,16,7]]],["CC2","Bras Basah",-22,-109,"x",143,[[1,-4,7],[-1,4,7]]],["CC3","Esplanade",58,-50,"x",282,[[1,-4,7],[-1,-4,7]]],["CC4","Promenade",150,-48,"x",396,[[1,12,7],[-1,-12,7]]]],"len":432,"pil":[]},"DTL":{"loop":false,"level":34,"color":24260,"elev":false,"path":[[-956,-967],[-956,-907],[-933,-907],[-933,-816],[-913,-816],[-913,-749],[-900,-749],[-900,-675],[-853,-675],[-853,-517],[-758,-517],[-758,-482],[-633,-482],[-633,-445],[-538,-445],[-538,-424],[-452,-424],[-452,-433],[-394,-433],[-394,-421],[-346,-421],[-346,-385],[-212,-385],[-212,-226],[31,-226],[31,-266],[-63,-266],[-63,-274],[81,-274],[81,-129],[148,-129],[148,-19],[118,-19],[118,180],[-38,180],[-38,133],[-126,133],[-126,68],[-138,68],[-138,-12],[-128,-12],[-128,-118],[-27,-118],[-27,-166],[58,-166],[58,-388],[207,-388],[207,-453],[314,-453],[314,-483],[439,-483],[439,-461],[509,-461],[509,-485],[606,-485],[606,-525],[692,-525],[692,-510],[786,-510],[786,-522],[872,-522],[872,-514],[947,-514],[947,-694],[1006,-694],[1006,-706],[1067,-706],[1067,-696],[1165,-696],[1165,-520],[1177,-520],[1177,-442]],"st":[["DT1","Bukit Panjang",-956,-931,"z",36,[[1,-4,7],[-1,-4,7]]],["DT2","Cashew",-933,-840,"z",150,[[1,-4,7],[-1,-4,7]]],["DT3","Hillview",-913,-773,"z",237,[[1,-4,7],[-1,-4,7]]],["DT4","Hume",-900,-699,"z",324,[[1,-4,7],[-1,-4,7]]],["DT5","Beauty World",-853,-567,"z",503,[[1,-4,7],[-1,-4,7]]],["DT6","King Albert Park",-782,-517,"x",624,[[1,-4,7],[-1,-4,7]]],["DT7","Sixth Avenue",-657,-482,"x",784,[[1,-4,7],[-1,-4,7]]],["DT8","Tan Kah Kee",-562,-445,"x",916,[[1,-4,7],[-1,-4,7]]],["DT9","Botanic Gardens",-476,-424,"x",1023,[[1,-4,7],[-1,-4,7]]],["DT10","Stevens",-370,-421,"x",1150,[[1,-12,7],[-1,-12,7]]],["DT11","Newton",-236,-385,"x",1320,[[1,-4,7],[-1,-4,7]]],["DT12","Little India",7,-226,"x",1722,[[1,-4,7],[-1,-4,7]]],["DT13","Rochor",-39,-274,"x",1912,[[-1,12,7]]],["DT14","Bugis",81,-153,"z",2153,[[1,-4,7],[-1,-4,7]]],["DT15","Promenade",148,-43,"z",2330,[[1,-4,7],[-1,-4,7]]],["DT16","Bayfront",118,140,"z",2543,[[1,4,7],[-1,-4,7]]],["DT17","Downtown",14,180,"x",2687,[[1,-4,7],[-1,-4,7]]],["DT18","Telok Ayer",-62,133,"x",2810,[[1,-4,7],[-1,-4,7]]],["DT19","Chinatown",-126,92,"z",2915,[[1,-4,7],[-1,-4,7]]],["DT20","Fort Canning",-128,-36,"z",3065,[[1,-4,7],[-1,-4,7]]],["DT21","Bencoolen",-27,-142,"z",3272,[[1,-12,7],[-1,-4,7]]],["DT22","Jalan Besar",58,-251,"z",3466,[[1,-4,7],[-1,-4,7]]],["DT23","Bendemeer",183,-388,"x",3728,[[1,-4,7],[-1,-4,7]]],["DT24","Geylang Bahru",290,-453,"x",3900,[[1,-4,7],[-1,-4,7]]],["DT25","Mattar",415,-483,"x",4055,[[1,-4,7],[-1,-4,7]]],["DT26","MacPherson",485,-461,"x",4147,[[1,-4,7],[-1,4,7]]],["DT27","Ubi",582,-485,"x",4268,[[1,-4,7],[-1,-4,7]]],["DT28","Kaki Bukit",668,-525,"x",4394,[[1,-4,7],[-1,-4,7]]],["DT29","Bedok North",762,-510,"x",4503,[[1,-4,7],[-1,-4,7]]],["DT30","Bedok Reservoir",896,-514,"x",4657,[[1,-4,7],[-1,-4,7]]],["DT31","Tampines West",947,-601,"z",4795,[[1,-4,7],[-1,-4,7]]],["DT32","Tampines",982,-694,"x",4923,[[1,-4,7],[-1,-4,7]]],["DT33","Tampines East",1091,-696,"x",5054,[[1,-4,7],[-1,-4,7]]],["DT34","Upper Changi",1165,-544,"z",5280,[[1,-4,7],[-1,-4,7]]],["DT35","Expo",1177,-478,"z",5358,[[1,-4,7],[-1,4,7]]]],"len":5394,"pil":[]},"TEL":{"loop":false,"level":27,"color":10312485,"elev":false,"path":[[-678,-1626],[-678,-1566],[-669,-1566],[-669,-1464],[-600,-1464],[-600,-1150],[-173,-1150],[-173,-1018],[-185,-1018],[-185,-950],[-176,-950],[-176,-902],[-217,-902],[-217,-820],[-235,-820],[-235,-747],[-165,-747],[-165,-598],[-370,-598],[-370,-397],[-485,-397],[-485,-188],[-416,-188],[-416,-251],[-330,-251],[-330,-203],[-339,-203],[-339,-27],[-305,-27],[-305,175],[-183,175],[-183,161],[-106,161],[-106,219],[-19,219],[-19,230],[259,230],[259,-80],[356,-80],[356,-128],[487,-128],[487,-112],[535,-112],[535,-123],[633,-123],[633,-157],[705,-157],[705,-195],[788,-195],[788,-225],[925,-225],[925,-259],[1037,-259]],"st":[["TE1","Woodlands North",-678,-1590,"z",36,[[1,-4,7],[-1,-4,7]]],["TE2","Woodlands",-669,-1488,"z",147,[[1,-4,7],[-1,-4,7]]],["TE3","Woodlands South",-600,-1405,"z",299,[[1,-4,7],[-1,-4,7]]],["TE4","Springleaf",-363,-1150,"x",791,[[1,-4,7],[-1,-4,7]]],["TE5","Lentor",-173,-1042,"z",1089,[[1,-4,7],[-1,-4,7]]],["TE6","Mayflower",-176,-926,"z",1226,[[1,-4,7],[-1,-4,7]]],["TE7","Bright Hill",-217,-844,"z",1349,[[1,-4,7],[-1,-4,7]]],["TE8","Upper Thomson",-235,-771,"z",1440,[[1,-4,7],[-1,-4,7]]],["TE9","Caldecott",-165,-622,"z",1659,[[1,-4,7],[-1,-4,7]]],["TE11","Stevens",-370,-421,"z",2065,[[1,-12,7],[-1,16,7]]],["TE12","Napier",-485,-239,"z",2362,[[1,-4,7],[-1,-4,7]]],["TE13","Orchard Boulevard",-440,-188,"x",2458,[[1,-4,7],[-1,-4,7]]],["TE14","Orchard",-330,-227,"z",2655,[[1,4,7],[-1,4,7]]],["TE15","Great World",-339,-51,"z",2840,[[1,-4,7],[-1,-4,7]]],["TE16","Havelock",-305,27,"z",2952,[[1,-4,7],[-1,-4,7]]],["TE17","Outram Park",-207,175,"x",3198,[[1,4,7],[-1,16,7]]],["TE18","Maxwell",-130,161,"x",3289,[[1,-4,7],[-1,-4,7]]],["TE19","Shenton Way",-43,219,"x",3434,[[1,-4,7],[-1,-4,7]]],["TE20","Marina Bay",43,230,"x",3531,[[1,4,7],[-1,-4,7]]],["TE22","Gardens by the Bay",259,196,"z",3781,[[1,-4,7],[-1,-4,7]]],["TE23","Tanjong Rhu",356,-104,"z",4178,[[1,-4,7],[-1,-4,7]]],["TE24","Katong Park",511,-112,"x",4373,[[1,-4,7],[-1,-4,7]]],["TE25","Tanjong Katong",609,-123,"x",4482,[[1,-4,7],[-1,-4,7]]],["TE26","Marine Parade",681,-157,"x",4588,[[1,-4,7],[-1,-4,7]]],["TE27","Marine Terrace",764,-195,"x",4709,[[1,-4,7],[-1,-4,7]]],["TE28","Siglap",901,-225,"x",4876,[[1,-4,7],[-1,-4,7]]],["TE29","Bayshore",1001,-259,"x",5010,[[1,-4,7],[-1,-4,7]]]],"len":5046,"pil":[]}},"order":["NSL","EWL","CGL","NEL","CCL","CEB","DTL","TEL"]};
+const SG_LINE_NAMES={NSL:'North-South Line',EWL:'East-West Line',CGL:'East-West Line (Changi Airport branch)',NEL:'North East Line',CCL:'Circle Line',CEB:'Circle Line (Dhoby Ghaut branch)',DTL:'Downtown Line',TEL:'Thomson-East Coast Line'};
+const SG_BLOCK={NSL:63,EWL:66,CGL:66,NEL:71,CCL:72,CEB:72,DTL:64,TEL:73};
+function sgSegs(L){const p=L.path.concat(L.loop?[L.path[0]]:[]);const out=[];for(let i=0;i<p.length-1;i++)out.push([p[i],p[i+1]]);return out}
+function buildSG(B,L){const G=SGNET.G;L.ground=G;const res=[];const lines=SGNET.lines;
+  // corridor cells per level (to open tunnel walls where tracks cross)
+  const corridor={};for(const ln in lines){const l=lines[ln];if(l.elev)continue;const set=corridor[l.level]||(corridor[l.level]=new Set());
+    for(const [u,v] of sgSegs(l)){const n=Math.max(Math.abs(v[0]-u[0]),Math.abs(v[1]-u[1]));const sx=Math.sign(v[0]-u[0]),sz=Math.sign(v[1]-u[1]);
+      for(let k=0;k<=n;k++){const x=u[0]+sx*k,z=u[1]+sz*k;for(let d=-1;d<=1;d++)set.add(sx?x+','+(z+d):(x+d)+','+z)}}}
+  for(const ln of SGNET.order){const l=lines[ln];const lv=l.level,col=SG_BLOCK[ln];const segs=sgSegs(l);const cor=corridor[lv];
+    const stRange=l.st.map(s=>({x:s[2],z:s[3],ax:s[4]}));
+    const inStation=(x,z)=>stRange.some(s=>s.ax==='x'?(Math.abs(z-s.z)<=2&&Math.abs(x-s.x)<=18):(Math.abs(x-s.x)<=2&&Math.abs(z-s.z)<=18));
+    for(const [u,v] of segs){const alongX=u[1]===v[1];const c=alongX?u[1]:u[0];const a=Math.min(alongX?u[0]:u[1],alongX?v[0]:v[1]),b=Math.max(alongX?u[0]:u[1],alongX?v[0]:v[1]);
+      const bb=alongX?[a-2,lv-1,c-2,b+2,lv+5,c+2]:[c-2,lv-1,a-2,c+2,lv+5,b+2];
+      if(l.elev){B.add([bb[0],lv-1,bb[2],bb[3],lv,bb[5]],(x,y,z)=>{const o=alongX?Math.abs(z-c):Math.abs(x-c);if(y===lv-1)return[62,0];if(o===2&&!inStation(x,z))return[61,0];return null});
+        res.push(alongX?[a-4,c-4,b+4,c+4]:[c-4,a-4,c+4,b+4])}
+      else B.add(bb,(x,y,z)=>{const o=alongX?Math.abs(z-c):Math.abs(x-c);if(y===lv-1)return[o<2?22:21,0];if(y===lv+5)return[21,0];
+        if(o===2){if(y<=lv+4&&cor.has(x+','+z))return[0,0];return[21,0]}if(y===lv+4&&o===0&&((alongX?x:z)%12===0))return[35,0];return[0,0]})}
+    if(l.elev)for(const [x,z] of l.pil){B.fill(x-1,G+1,z-1,x,lv-3,z,62);B.fill(x-2,lv-2,z-2,x+1,lv-2,z+1,61)}
+    // stations
+    for(const s of l.st){const [code,name,sx,sz,ax,sd,stairs]=s;const Pt=(t,o,y)=>ax==='x'?[sx+t,y,sz+o]:[sx+o,y,sz+t];
+      const box=(t0,o0,y0,t1,o1,y1,f)=>{const p=Pt(t0,o0,y0),q=Pt(t1,o1,y1);B.add([Math.min(p[0],q[0]),Math.min(p[1],q[1]),Math.min(p[2],q[2]),Math.max(p[0],q[0]),Math.max(p[1],q[1]),Math.max(p[2],q[2])],typeof f==='function'?f:()=>[f,0])};
+      const loc=(x,z)=>ax==='x'?[x-sx,z-sz]:[z-sz,x-sx];
+      if(l.elev){for(const side of [-1,1]){box(-18,side*2,lv-1,18,side*6,lv,61);
+          box(-18,side*2,lv+1,18,side*2,lv+1,(x,y,z)=>{const [t]=loc(x,z);return((t+18)%7===3||(t+18)%7===4)?null:[10,0]});
+          box(-18,side*6,lv+1,18,side*6,lv+5,(x,y,z)=>{const [t]=loc(x,z);return(t+18)%6===0?[62,0]:null})}
+        box(-19,-7,lv+6,19,7,lv+6,(x,y,z)=>{const [t,o]=loc(x,z);return(Math.abs(o)===4||o===0)&&t%6===0?[35,0]:[col,0]});box(-19,-7,lv+5,19,-7,lv+5,61);box(-19,7,lv+5,19,7,lv+5,61);
+        res.push(ax==='x'?[sx-21,sz-9,sx+21,sz+9]:[sx-9,sz-21,sx+9,sz+21])}
+      else{const cor=corridor[lv];box(-22,-7,lv-1,22,7,lv+5,(x,y,z)=>{const [t,o]=loc(x,z);const ao=Math.abs(o),at=Math.abs(t);
+          if(y===lv-1)return[ao<2?22:21,0];if(y===lv+5)return(t%5===0&&ao===4)?[35,0]:[61,0];
+          if(ao===7||at===22){if(cor.has(x+','+z)&&y<=lv+4)return[0,0];return[y===lv+2?61:col,0]}
+          if(ao>=2&&ao<=6&&at<=18&&y===lv)return[61,0];if(ao===2&&at<=18&&(y===lv+1||y===lv+2)&&!((t+18)%7===3||(t+18)%7===4))return[10,0];return[0,0]})}
+      // stairs
+      const nSteps=Math.abs(lv-G);
+      for(const [side,off,o0] of stairs){
+        if(o0>7)box(off,side*7,lv-1,off+2,side*(o0-1),lv+5,(x,y,z)=>{if(y===lv-1)return[21,0];if(y===lv)return[l.elev?61:61,0];if(y<=lv+4)return[0,0];return l.elev?null:[21,0]});
+        for(let i=0;i<=nSteps;i++){const o=side*(o0+i);
+          if(l.elev){const top=lv-i;box(off,o,G+1,off+2,o,top,top>G?21:21);box(off,o,top+1,off+2,o,top+4,0)}
+          else{const top=lv+i;box(off,o,lv-1,off+2,o,top,21);box(off,o,top+1,off+2,o,Math.min(top+4,G+4),0);if(top+5<=G)box(off,o,top+5,off+2,o,top+5,21)}}
+        const endO=side*(o0+nSteps);
+        if(!l.elev){box(off-1,endO-side*3,G+4,off+3,endO,G+4,col);for(const tt of [off-1,off+3])box(tt,endO,G+1,tt,endO,G+3,62)}
+        const e=Pt(off+1,endO,0);res.push([e[0]-5,e[2]-5,e[0]+5,e[2]+5])}
+    }}
+  // rails last so nothing carves them away
+  for(const ln of SGNET.order){const l=lines[ln];const lv=l.level;const P=l.path;const n=P.length;
+    for(const [u,v] of sgSegs(l)){if(u[1]===v[1])B.fill(Math.min(u[0],v[0]),lv,u[1],Math.max(u[0],v[0]),lv,u[1],60,0);else B.fill(u[0],lv,Math.min(u[1],v[1]),u[0],lv,Math.max(u[1],v[1]),60,1)}
+    for(let i=0;i<n;i++){if(!l.loop&&(i===0||i===n-1))continue;B.set(P[i][0],lv,P[i][1],60,cornerMeta(P[(i-1+n)%n],P[i],P[(i+1)%n]))}}
+  // neighbourhoods around stations
+  const rnd=mulberry32(2026);const seen=new Set();
+  const hdb=(x0,z0,len,dep,fl,accent,alongZ)=>{const W_=alongZ?dep:len,Dp=alongZ?len:dep;const x1=x0+W_-1,z1=z0+Dp-1;const top=G+3+fl*3;res.push([x0-3,z0-3,x1+3,z1+3]);
+    B.add([x0,G,z0,x1,top+4,z1],(x,y,z)=>{const ex=x===x0||x===x1,ez=z===z0||z===z1,edge=ex||ez;const lx=alongZ?z-z0:x-x0;const shortSide=alongZ?ez:ex;
+      if(y===G)return[21,0];if(y<=G+3){if(y===G+3)return[61,0];return((ex&&ez)||(edge&&lx%4===0))?[62,0]:[0,0]}
+      if(y>top){if(y===top+1)return edge?[accent,0]:null;return(Math.abs(x-(x0+x1)/2)<2.5&&Math.abs(z-(z0+z1)/2)<2&&y<=top+3)?[62,0]:[0,0]}
+      const fy=(y-G-3)%3;if(fy===0)return[edge?(shortSide?accent:61):61,0];if(!edge)return[0,0];if(shortSide)return[accent,0];if(lx%3===0)return[(lx%6===0)?accent:61,0];return[10,0]})};
+  const tower=(x0,z0,w,d,h,mull)=>{res.push([x0-2,z0-2,x0+w+1,z0+d+1]);B.add([x0,G,z0,x0+w-1,G+h+2,z0+d-1],(x,y,z)=>{const lx=x-x0,lz=z-z0,e=lx===0||lz===0||lx===w-1||lz===d-1;const f=y-G;
+      if(f>h)return f===h+1?(e?[mull,0]:[62,0]):((e&&(lx+lz)%3===0)?[35,0]:null);if(f===0)return[21,0];if(!e)return f%4===0?[62,0]:[0,0];
+      const corner=(lx===0||lx===w-1)&&(lz===0||lz===d-1);if(corner||f%4===0)return[mull,0];if(f<4&&(lx===(w>>1)||lz===(d>>1)))return[0,0];return[10,0]})};
+  const acc=[63,64,65,66,67,71,72,73];
+  for(const ln of SGNET.order)for(const s of lines[ln].st){const key=s[1];if(seen.has(key))continue;seen.add(key);const sx=s[2],sz=s[3];const cbd=Math.hypot(sx,sz)<380;
+    let placed=0;for(let k=0;k<30&&placed<(cbd?4:3);k++){const ang=rnd()*Math.PI*2,r=24+rnd()*50;const cx=Math.round(sx+Math.cos(ang)*r),cz=Math.round(sz+Math.sin(ang)*r);
+      if(cbd){const w=10+(rnd()*5|0),d=10+(rnd()*5|0);if(!freeRect(res,cx-2,cz-2,cx+w+2,cz+d+2))continue;tower(cx,cz,w,d,24+(rnd()*26|0),[62,61,64,67][rnd()*4|0]);placed++}
+      else{const alongZ=rnd()<.5;const W_=alongZ?8:26,Dp=alongZ?26:8;if(!freeRect(res,cx-3,cz-3,cx+W_+3,cz+Dp+3))continue;hdb(cx,cz,26,8,9+(rnd()*6|0),acc[rnd()*acc.length|0],alongZ);placed++}}}
+  let n=0;for(let i=0;i<9000&&n<700;i++){const pick=SGNET.lines[SGNET.order[rnd()*SGNET.order.length|0]].st;const s=pick[rnd()*pick.length|0];const x=Math.round(s[2]+(rnd()-.5)*180),z=Math.round(s[3]+(rnd()-.5)*180);
+    if(freeRect(res,x-6,z-6,x+6,z+6)){rainTree(B,x,z,G);res.push([x-6,z-6,x+6,z+6]);n++}}
+  // trains
+  const trainsPer={NSL:3,EWL:3,CGL:1,NEL:2,CCL:3,CEB:1,DTL:3,TEL:3};const carsPer={CGL:3,CEB:3};
+  for(const ln of SGNET.order){const l=lines[ln];const lv=l.level+.02;let path,stopS=[],names=[],flip=[];
+    if(l.loop){path=l.path.map(p=>[p[0]+.5,lv,p[1]+.5]);for(const s of l.st){stopS.push(s[5]);names.push(s[0]+' '+s[1])}}
+    else{const f=l.path.map(p=>[p[0]+.5,lv,p[1]+.5]);path=f.concat(f.slice(1,-1).reverse());const L2=l.len*2;
+      l.st.forEach((s,i)=>{stopS.push(s[5]);names.push(s[0]+' '+s[1]);if(i===l.st.length-1)flip.push(s[5])});
+      for(let i=l.st.length-2;i>=0;i--){const s=l.st[i];stopS.push(L2-s[5]);names.push(s[0]+' '+s[1]);if(i===0)flip.push(L2-s[5])}}
+    const nt=trainsPer[ln];for(let k=0;k<nt;k++)L.trains.push({kind:'mrt',line:ln,livery:{body:0xc9cdd2,stripe:l.color},n:carsPer[ln]||4,path,stopS,stopNames:names,flipS:flip,speed:16,startStop:Math.floor(k*stopS.length/nt)})}
+  L.labels=[];for(const ln of SGNET.order){const l=lines[ln];for(const s of l.st){const [code,name,sx,sz,ax,,stairs]=s;
+      L.labels.push({pos:[sx+.5,l.elev?l.level+9:l.level+4,sz+.5],text:name,code,color:l.color});
+      if(!l.elev)for(const [side,off,o0] of stairs){const o=side*(o0+Math.abs(l.level-G));const p=ax==='x'?[sx+off+1.5,sz+o+.5]:[sx+o+.5,sz+off+1.5];L.labels.push({pos:[p[0],G+7,p[1]],text:name,code,color:l.color})}}}
+  const d0=lines.NSL.st.find(s=>s[1]==='Dhoby Ghaut');const lv=lines.NSL.level;L.spawn=d0[4]==='x'?[d0[2]+6.5,lv+1.01,d0[3]+4.5]:[d0[2]+4.5,lv+1.01,d0[3]+6.5];L.time=.1}
 
 // ---------- HUD ----------
 function show(id,on){$(id).classList.toggle('hidden',!on)}
@@ -2189,10 +2433,10 @@ function startWorld(seed,save,preset){
     D=W.dims[p.dim||'over'];player.pos.set(p.x,p.y,p.z)}
   else{if(W.preset){W.spawn=W.layout.spawn.slice();W.time=W.layout.time||.08;for(const [x,y,z,items] of W.layout.chests){const a=new Array(27).fill(null);items.forEach((it,i)=>a[i]=Object.assign({},it));W.chests.set('over:'+x+','+y+','+z,a)}}
     else W.spawn=findSpawn();
-    inv=new Array(36).fill(null);sel=0;Object.assign(player,{health:20,hunger:20,sat:5,flying:false,yaw:0,pitch:0,armor:[null,null,null,null],xp:0,level:0,effects:{},enchSeed:(Math.random()*1e6)|0});player.pos.set(...W.spawn)}
+    inv=new Array(36).fill(null);sel=0;Object.assign(player,{health:20,hunger:20,sat:5,flying:false,yaw:(W.layout&&W.layout.spawnYaw)||0,pitch:0,armor:[null,null,null,null],xp:0,level:0,effects:{},enchSeed:(Math.random()*1e6)|0});player.pos.set(...W.spawn)}
   if(mode==='survival')player.flying=false;setVoid();
   Object.assign(player,{exh:0,air:10,dead:false,sprinting:false,invuln:1,burn:0,riding:null,portalLock:true,portalT:0});player.vel.set(0,0,0);player.fallPeak=player.pos.y;cursor=null;handKey=-2;
-  gameStarted=true;setCamera();syncLoad(player.pos.x,player.pos.z,1500);restoreCarts();effDirty=true;if(W.preset)makeTrains();if(D.id==='end'&&!W.bossDead)spawnBoss();
+  gameStarted=true;setCamera();syncLoad(player.pos.x,player.pos.z,1500);restoreCarts();effDirty=true;if(W.preset){makeTrains();makeStationLabels()}if(D.id==='end'&&!W.bossDead)spawnBoss();
   hudDirty=true;$('#btnMode').textContent=mode==='survival'?'Survival':'Creative';saveGame()}
 const _switchDim=switchDim;switchDim=function(to){W.cartStash=W.cartStash||{};W.cartStash[D.id]=carts.map(c=>({x:c.x,y:c.y,z:c.z,from:c.from,to:c.to,t:c.t,v:c.v}));_switchDim(to);setVoid();restoreCarts()};
 function die(msg){player.dead=true;player.effects={};effDirty=true;player.health=0;player.riding=null;$('#deathMsg').textContent=msg+' Your items and experience are gone.';inv=new Array(36).fill(null);player.armor=[null,null,null,null];player.xp=0;player.level=0;hudDirty=true;setState('dead')}
@@ -2202,9 +2446,9 @@ function respawn(){if(D.id!=='over'){switchDim('over')}player.pos.set(...W.spawn
 let titleMode='survival';
 function setTitleMode(m){titleMode=m;$('#mSurv').setAttribute('aria-pressed',m==='survival');$('#mCrea').setAttribute('aria-pressed',m==='creative')}
 $('#mSurv').onclick=()=>setTitleMode('survival');$('#mCrea').onclick=()=>setTitleMode('creative');
-(function(){const col=$('.menuCol');const lab=document.createElement('div');lab.className='field';lab.style.marginTop='8px';lab.textContent='Prebuilt worlds';col.appendChild(lab);
-  for(const k in PRESETS){const b=document.createElement('button');b.className='btn';b.textContent=PRESETS[k].name;b.title=PRESETS[k].desc;b.onclick=()=>{mode=titleMode;begin(()=>startWorld(1234,null,k))};col.appendChild(b);
-    const d=document.createElement('div');d.className='note';d.style.marginTop='-6px';d.textContent=PRESETS[k].desc;col.appendChild(d)}})();
+(function(){const grid=$('#worldGrid');
+  for(const k in PRESETS){const b=document.createElement('button');b.className='worldCard';const n=document.createElement('b');n.textContent=PRESETS[k].name;const d=document.createElement('span');d.textContent=PRESETS[k].desc;
+    b.append(n,d);b.onclick=()=>{mode=titleMode;begin(()=>startWorld(1234,null,k))};grid.appendChild(b)}})();
 function refreshContinue(){const s=loadSave();show('#btnContinue',!!s);if(s)$('#btnContinue').textContent='Continue world ('+(s.preset?PRESETS[s.preset].name:'seed '+s.seed)+')'}
 function begin(fn){initAudio();setState('loading');setTimeout(()=>{fn();lockPointer(true)},40)}
 $('#btnNew').onclick=()=>{const txt=$('#seedIn').value;const seed=txt.trim()?strSeed(txt):(Math.random()*2e9|0);mode=titleMode;begin(()=>startWorld(seed,null,null))};
